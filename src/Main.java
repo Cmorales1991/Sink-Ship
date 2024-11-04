@@ -1,15 +1,54 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.println("Hello and welcome!");
+import Model.Map;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+public class Main extends Application {
+    private ToggleButton orientationToggle;
+
+    @Override
+    public void start(Stage primaryStage) {
+        AnchorPane root = new AnchorPane();
+
+        // spelbräda för server o klient
+        Map playerMap = new Map(true);
+        Map opponentMap = new Map(false);
+
+        // positionering spelplan för serverplan och client
+        AnchorPane playerPane = playerMap.getMapPane();
+        playerPane.setLayoutX(50);
+        playerPane.setLayoutY(50);
+
+        AnchorPane opponentPane = opponentMap.getMapPane();
+        opponentPane.setLayoutX(Map.GRID_SIZE * Map.CELL_SIZE + 200);
+        opponentPane.setLayoutY(50);
+
+        // underrubrik för spelplanerna
+        Label playerLabel = new Label("Serverns spelplan");
+        playerLabel.setLayoutX(150);
+        playerLabel.setLayoutY(10);
+        playerLabel.setTextFill(Color.RED);
+
+        Label opponentLabel = new Label("Klientens spelplan");
+        opponentLabel.setLayoutX(Map.GRID_SIZE * Map.CELL_SIZE + 280);
+        opponentLabel.setLayoutY(10);
+        opponentLabel.setTextFill(Color.GREEN);
+
+        root.getChildren().addAll(playerPane, opponentPane, playerLabel, opponentLabel);
+
+        Scene scene = new Scene(root, Map.GRID_SIZE * Map.CELL_SIZE * 2 + 250, Map.GRID_SIZE * Map.CELL_SIZE + 150);
+        primaryStage.setTitle("Sänka Skepp");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+    }
+
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
