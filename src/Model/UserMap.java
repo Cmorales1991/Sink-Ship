@@ -65,6 +65,28 @@ public class UserMap extends Map {
                 .orElse(null);
     }
 
+    public void takeAttack(int x, int y) {
+        Coordinate c = getCoordinate(x, y);
+        if (c.isShip()) {
+            c.destroyShip();
+            System.out.println("Part of ship was destroyed on coordinate (" + c.getX() + ", " + c.getY() + ")");
+        }
+        else {
+            System.out.println("No ship found on coordinate (" + c.getX() + ", " + c.getY() + ")");
+        }
+    }
+
+    public boolean checkLost() {
+        boolean lastShip = true;
+
+        for (Coordinate coord : map) {
+            if (coord.isShip()) {
+                lastShip = false;
+            }
+        }
+        return lastShip;
+    }
+
     // METHOD FOR TESTING
     @Override
     public void printMap() {
