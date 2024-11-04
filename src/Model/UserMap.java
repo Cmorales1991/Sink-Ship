@@ -1,4 +1,8 @@
 package Model;
 
-public class UserMap {
+public class UserMap extends Map {
+
+    public UserMap() {
+        super();
+    }
 }

@@ -2,8 +2,9 @@ package Model;
 
 public abstract class User {
 
-    // lagrar alla ens båtplatser, i en 2dimensional array antar jag
+    private Map map;
 
-    public User() {
+    public User(Map map) {
+        this.map = map;
     }
 }
