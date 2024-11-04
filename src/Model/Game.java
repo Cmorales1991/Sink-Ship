@@ -11,4 +11,8 @@ public class Game {
         this.user1 = user1;
         this.user2 = user2;
     }
+
+    public void convertCoordinate() {
+        // ändra 0,0 till A,0 osv
+    }
 }
