@@ -50,8 +50,6 @@ public class Map {
                 isHorizontal = !isHorizontal; // Växla placering mellan horiontell o vetrikal
             });
             pane.getChildren().add(toggleButton);
-
-//            addCoordinateLabels(pane);
         }
 
     }
