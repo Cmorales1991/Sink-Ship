@@ -45,8 +45,8 @@ public class GameMap {
         // en knapp för att växla placering mellan horisontell och vertikal
         if (this.isPlayer) {
             Button toggleButton = new Button("Växla placering");
-            toggleButton.setLayoutX(10);
-            toggleButton.setLayoutY(GRID_SIZE * CELL_SIZE + 40);
+            toggleButton.setLayoutX(100);
+            toggleButton.setLayoutY(GRID_SIZE * CELL_SIZE + 30);
             toggleButton.setOnAction(event -> {
                 isHorizontal = !isHorizontal; // Växla placering mellan horiontell o vetrikal
             });
@@ -58,18 +58,26 @@ public class GameMap {
     private void addCoordinateLabels(AnchorPane pane) {
         // bokstavsmarkeringar för y-axeln (A-J)
         for (int i = 0; i < GRID_SIZE; i++) {
-            Label rowLabel = new Label(String.valueOf((char) ('A' + i)));
-            rowLabel.setLayoutX(-20); // Placering till vänster om spelbrädet
-            rowLabel.setLayoutY(i * CELL_SIZE + CELL_SIZE / 4);
-            pane.getChildren().add(rowLabel);
+            Label rowLabelLeft = new Label(String.valueOf((char) ('A' + i)));
+            rowLabelLeft.setLayoutX(-20); // Placering till vänster om spelbrädet
+            rowLabelLeft.setLayoutY(i * CELL_SIZE + CELL_SIZE / 4);
+
+            Label rowLabelRight = new Label(String.valueOf((char) ('A' + i)));
+            rowLabelRight.setLayoutX(GRID_SIZE * CELL_SIZE + 5); // placering höger om spelbrädet
+            rowLabelRight.setLayoutY(i * CELL_SIZE + CELL_SIZE / 4);
+            pane.getChildren().addAll(rowLabelLeft, rowLabelRight);
         }
 
         // siffermarkeringar för x-axeln (0-9)
         for (int i = 0; i < GRID_SIZE; i++) {
-            Label colLabel = new Label(String.valueOf(i));
-            colLabel.setLayoutX(i * CELL_SIZE + CELL_SIZE / 3);
-            colLabel.setLayoutY(-20); // Placering ovanför spelbrädet
-            pane.getChildren().add(colLabel);
+            Label colLabelTop = new Label(String.valueOf(i));
+            colLabelTop.setLayoutX(i * CELL_SIZE + CELL_SIZE / 3);
+            colLabelTop.setLayoutY(-20); // Placering ovanför spelbrädet
+
+            Label colLabelBottom = new Label(String.valueOf(i));
+            colLabelBottom.setLayoutX(i * CELL_SIZE + CELL_SIZE / 3);
+            colLabelBottom.setLayoutY(GRID_SIZE * CELL_SIZE + 5); // Placering under spelbrädet
+            pane.getChildren().addAll(colLabelTop, colLabelBottom);
         }
     }
 
