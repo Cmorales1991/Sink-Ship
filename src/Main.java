@@ -1,15 +1,41 @@
+import Model.Attack;
+import Model.ServerUser;
 import Model.UserMap;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.println("Hello and welcome!");
+
+        // PRINTAR EN MASSA SAKER HÄR FÖR ATT VISA VAD JAG GJORT XD
+        // det ska bort sen (kanske? vi kan ju ha kvar det om vi vill för att se bättre vad som händer)
+
+        // skapa en UserMap, vilket är kartan som tillhör denna instans av programmet
+        // jag tog bort EnemyMap-klassen, vi kommer inte att behöva den
 
         UserMap map = new UserMap();
+        ServerUser user = new ServerUser(map);
+
+        // viktigt: detta är inte hur programmet ska startas, det ska egentligen startas genom en Game-instans
+        // visar bara lite nu hur jag tänkt med logiken
+
+        // i detta exempel är det en serveruser, men både serveruser + clientuser extends user
+        // så de har samma funktionalitet. det enda som ska implementeras i ServerUser + ClientUser
+        // är ju egentligen olika sockets
+
+        // printa kartan för att visa hur en usermap ser ut:
+
         map.printMap();
+        // det är alltså koordinater och en boolean som berättar om det är en båt där elr ej :)
+        // tänker att game-klassen kan konvertera koordinaterna rätt, alltså att x blir bokstäver ist
+        // för det ska ju vara A,0 ist för 0,0
+        // men det är enklare att utföra logik på nummer så det blir ett sista steg
+
+        // den här metoden returnerar en random Attack
+        // en attack innehåller en koordinat (som inte attackerats tidigare)
+        // attacker ska skickas fram och tillbaka mellan server/client :)
+
+        // testar attackera koordinat 5,5 på vår egen karta (lol)
+        Attack attack = new Attack(5,5);
+        user.takeAttack(attack.getX(), attack.getY());
 
     }
 }

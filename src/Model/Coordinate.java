@@ -27,4 +27,8 @@ public class Coordinate {
     public void setShip(boolean ship) {
         this.ship = ship;
     }
+
+    public void destroyShip() {
+        this.ship = false;
+    }
 }

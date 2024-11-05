@@ -2,7 +2,7 @@ package Model;
 
 public class ClientUser extends User {
 
-    public ClientUser(Map map) {
+    public ClientUser(UserMap map) {
         super(map);
     }
 }
