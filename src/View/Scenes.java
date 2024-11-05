@@ -1,11 +1,13 @@
 package View;
 
+import Model.Ship;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
 
 public class Scenes extends Application {
     private static final double WINDOWSIZE = 450;
@@ -22,13 +24,13 @@ public class Scenes extends Application {
         GameMap clientMap = new GameMap(false);
 
         // positionering spelplan för serverplan och client
-        AnchorPane playerPane = serverMap.getGameMapPane();
-        playerPane.setLayoutX(50);
-        playerPane.setLayoutY(50);
+        AnchorPane serverPane = serverMap.getGameMapPane();
+        serverPane.setLayoutX(50);
+        serverPane.setLayoutY(50);
 
-        AnchorPane opponentPane = clientMap.getGameMapPane();
-        opponentPane.setLayoutX(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 150);
-        opponentPane.setLayoutY(50);
+        AnchorPane clientPane = clientMap.getGameMapPane();
+        clientPane.setLayoutX(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 150);
+        clientPane.setLayoutY(50);
 
         // underrubrik för spelplanerna
         Label serverLabel = new Label("Serverns spelplan");
@@ -45,8 +47,7 @@ public class Scenes extends Application {
         statusLabel.setLayoutX(30);
         statusLabel.setLayoutY(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 110);
 
-        anchorPane.getChildren().addAll(playerPane, opponentPane, serverLabel, clientLabel, statusLabel);
-
+        anchorPane.getChildren().addAll(serverPane, clientPane, serverLabel, clientLabel, statusLabel);
         Scene scene = new Scene(anchorPane);
         primaryStage.setTitle("Sänka Skepp");
         primaryStage.setScene(scene);
