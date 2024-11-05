@@ -1,12 +1,13 @@
 package View;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class Scene extends Application {
+public class Scenes extends Application {
     private static final double WINDOWSIZE = 450;
     private Label statusLabel;
 
@@ -46,7 +47,7 @@ public class Scene extends Application {
 
         anchorPane.getChildren().addAll(playerPane, opponentPane, serverLabel, clientLabel, statusLabel);
 
-        javafx.scene.Scene scene = new javafx.scene.Scene(anchorPane);
+        Scene scene = new Scene(anchorPane);
         primaryStage.setTitle("Sänka Skepp");
         primaryStage.setScene(scene);
         primaryStage.show();

@@ -1,14 +1,14 @@
 package Controller;
 
 import Model.Game;
-import View.Scene;
+import View.Scenes;
 
 public class Controller {
 
     private Game model;
-    private Scene view;
+    private Scenes view;
 
-    public Controller(Game model, Scene view) {
+    public Controller(Game model, Scenes view) {
         this.model = model;
         this.view = view;
 
