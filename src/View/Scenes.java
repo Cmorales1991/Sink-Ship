@@ -8,13 +8,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.util.List;
 
 public class Scenes extends Application {
     private static final double WINDOWSIZE = 450;
     private Label statusLabel;
-    private List<Ship> ships;
-
 
     @Override
     public void start(Stage primaryStage) {
