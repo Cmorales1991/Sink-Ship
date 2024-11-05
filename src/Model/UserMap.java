@@ -77,14 +77,14 @@ public class UserMap extends Map {
     }
 
     public boolean checkLost() {
-        boolean lastShip = true;
+        boolean noShips = true;
 
         for (Coordinate coord : map) {
             if (coord.isShip()) {
-                lastShip = false;
+                noShips = false; // IF ANY SHIPS ARE LEFT, RETURN FALSE (NOT LOST)
             }
         }
-        return lastShip;
+        return noShips;
     }
 
     // METHOD FOR TESTING

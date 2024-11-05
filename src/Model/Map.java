@@ -8,12 +8,16 @@ public abstract class Map {
     List<Coordinate> map = new ArrayList<>();
 
     public Map() {
-        // Create empty map, 10x10
+        // CREATE EMPTY MAP, 10x10
         for(int i = 0; i < 10; i++) {
             for(int j = 0; j < 10; j++) {
                 map.add(new Coordinate(i, j, false));
             }
         }
+    }
+
+    public List<Coordinate> getMap() {
+        return map;
     }
 
     // METHOD FOR TESTING

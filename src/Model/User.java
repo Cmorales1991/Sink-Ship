@@ -6,35 +6,36 @@ import java.util.Random;
 
 public abstract class User {
 
-    private Map map;
+    private UserMap map;
     private List<Attack> attacks = new ArrayList<>();
 
-    public User(Map map) {
+    public User(UserMap map) {
         this.map = map;
     }
 
-    public void attack() {
+    // ATTACK WILL BE SENT TO ENEMY PLAYER (SERVER OR CLIENT) THROUGH GAME CLASS
+    public Attack attack() {
 
-        boolean attackedCoordinate = false;
+        Attack performedAttack;
+        Random rand = new Random();
 
-        while (!attackedCoordinate) {
-            Random rand = new Random();
+        while (true) {
+
             int x = rand.nextInt(10);
             int y = rand.nextInt(10);
 
-            for (Attack attack : attacks) {
-                if (attack.getX() == x && attack.getY() == y) {
-                    break;
-                }
-                else {
-                    attacks.add(new Attack(x,y));
-                    attackedCoordinate = true;
-                }
+            boolean exists = attacks.stream()
+                    .anyMatch(attack -> attack.getX() == x && attack.getY() == y);
+
+            if (!exists) {
+                performedAttack = new Attack(x, y);
+                attacks.add(performedAttack);
+                return performedAttack;
             }
         }
+    }
 
-        // attackera slumpad koordinat, gå igenom attackedCoordinates och prova
-        // igen om koordinaten redan attackerats,
-        // när en koordinat blivit attackerad, lägg den i attackedCoordinates
+    public void takeAttack(int x, int y) {
+        map.takeAttack(x,y);
     }
 }
