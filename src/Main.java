@@ -7,6 +7,7 @@ import View.ViewMenu;
 import View.View;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -52,12 +53,11 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception
-    {
-        ViewGame view = new ViewGame(450, 900);
-
-        primaryStage = view.getStage();
-
+    public void start(Stage primaryStage) {
+        // Skapa menyn och visa den initialt, och skicka primaryStage till ViewMenu
+        ViewMenu viewMenu = new ViewMenu(500, 800, primaryStage);
+        primaryStage.setScene(viewMenu.getScene());
+        primaryStage.setTitle("Sänka Skepp meny");
         primaryStage.show();
     }
 }

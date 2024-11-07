@@ -12,10 +12,13 @@ public class ViewGame extends View
 
     private Label serverLabel, clientLabel, statusLabel;
 
-    public ViewGame(int height, int width)
-    {
+    public ViewGame(int height, int width, boolean isServer) {
         super(height, width);
-
+        if (isServer) {
+            System.out.println("Startar spelet som Server");
+        } else {
+            System.out.println("Startar spelet som Klient");
+        }
         init();
     }
 

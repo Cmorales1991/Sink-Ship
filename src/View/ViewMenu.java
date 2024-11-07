@@ -1,60 +1,80 @@
 package View;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-public class ViewMenu extends View
-{
+public class ViewMenu extends View {
 
-    View nextView;
+    private View nextView;
+    private Stage primaryStage;
+    private ViewGame viewGameServer;
+    private ViewGame viewGameClient;
 
-    public ViewMenu(int height, int width)
-    {
+    public ViewMenu(int height, int width, Stage primaryStage) {
         super(height, width);
-
+        this.primaryStage = primaryStage;
         nextView = null;
-
-        //init kallas för att sätta upp det grafiska så som knappar, labels osv.
+        new Thread(() -> {
+        viewGameServer = new ViewGame(height, width, true);
+        viewGameClient = new ViewGame(height, width, false);
+        }).start();
         init();
     }
 
-
-    public void input()
-    {
-
-        //kolla efter musklick
-
-        //1. om musklick på knapp server
-        //2. kalla på controller?
-
-    }
-
     @Override
-    protected void init()
-    {
-        Button startButton = new Button("Start");
-        startButton.setPrefSize(100, 100);
-        startButton.setLayoutY((height / 2) - (startButton.getLayoutBounds().getHeight() / 2));
-        startButton.setLayoutX((width / 2) - (startButton.getLayoutBounds().getWidth() / 2));
+    protected void init() {
+        // serverstart knapp
+        Button serverButton = new Button("Starta som Server");
+        serverButton.setPrefSize(150, 50);
+        serverButton.setLayoutX((width / 2) - 75);
+        serverButton.setLayoutY((height / 2) - 60);
 
-
-        EventHandler<ActionEvent> startGameEvent = new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent event)
-            {
-                nextView = new ViewGame(height, width);
+        // serverstartar när man klickar på start
+        serverButton.setOnAction(event -> {
+            if (viewGameServer == null) {
+                new Thread(() -> {
+                    viewGameServer = new ViewGame(height, width, true);
+                    Platform.runLater(() -> primaryStage.setScene(viewGameServer.getScene()));
+                }).start();
+            } else {
+                primaryStage.setScene(viewGameServer.getScene());
             }
-        };
+        });
 
-        pane.getChildren().add(startButton);
+        // klientstart knapp
+        Button clientButton = new Button("Starta som Klient");
+        clientButton.setPrefSize(150, 50);
+        clientButton.setLayoutX((width / 2) - 75);
+        clientButton.setLayoutY((height / 2));
+
+        // klientserver startar när man klickar på start
+        clientButton.setOnAction(event -> {
+            if (viewGameClient == null) {
+                new Thread(() -> {
+                    viewGameClient = new ViewGame(height, width, false);
+                    Platform.runLater(() -> primaryStage.setScene(viewGameClient.getScene()));
+                }).start();
+            } else {
+                primaryStage.setScene(viewGameClient.getScene());
+            }
+        });
+
+        // avsluta knapp
+        Button exitButton = new Button("Avsluta");
+        exitButton.setPrefSize(150, 50);
+        exitButton.setLayoutX((width / 2) - 75);
+        exitButton.setLayoutY((height / 2) + 60);
+        // exitbutton svarar vid tryck och avslutar program
+        exitButton.setOnAction(event -> {
+            primaryStage.close();
+        });
+
+        pane.getChildren().addAll(serverButton, clientButton, exitButton);
     }
 
     @Override
-    public View update()
-    {
+    public View update() {
         return nextView;
     }
 }
