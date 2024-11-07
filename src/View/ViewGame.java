@@ -1,5 +1,6 @@
 package View;
 
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -19,11 +20,11 @@ public class ViewGame extends View
         } else {
             System.out.println("Startar spelet som Klient");
         }
-        init();
+        init(isServer);
     }
 
     @Override
-    protected void init()
+    protected void init(boolean isServer)
     {
         // spelbräda för server o klient
         serverMap = new GameMap(true);
@@ -53,7 +54,28 @@ public class ViewGame extends View
         statusLabel.setLayoutX(30);
         statusLabel.setLayoutY(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 110);
 
+        // växla knappen visas efter val av spelplan (server eller klient)
+        if (isServer) {
+            changeButton(serverPane);
+        } else {
+            changeButton(clientPane);
+        }
+
         pane.getChildren().addAll(serverPane, clientPane, serverLabel, clientLabel, statusLabel);
+
+
+
+    }
+    // knapp för att växla på placering av skepp
+    private void changeButton(AnchorPane pane) {
+        Button toggleButton = new Button("Växla placering");
+        toggleButton.setLayoutX(100);
+        toggleButton.setLayoutY(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 30);
+        toggleButton.setOnAction(event -> {
+            boolean isHorizontal = !serverMap.isHorizontal;
+            toggleButton.setText(isHorizontal ? "Placera horisontellt" : "Placera vertikalt");
+        });
+        pane.getChildren().add(toggleButton);
     }
 
     @Override

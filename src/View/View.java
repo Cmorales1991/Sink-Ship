@@ -18,7 +18,7 @@ public abstract class View {
         scene = new Scene(pane, width, height);
     }
 
-    protected abstract void init();
+    protected abstract void init(boolean isServer);
 
     public Scene getScene() {
         return scene;

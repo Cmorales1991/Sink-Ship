@@ -19,11 +19,11 @@ public class ViewMenu extends View {
         viewGameServer = new ViewGame(height, width, true);
         viewGameClient = new ViewGame(height, width, false);
         }).start();
-        init();
+        init(true);
     }
 
     @Override
-    protected void init() {
+    protected void init(boolean isServer) {
         // serverstart knapp
         Button serverButton = new Button("Starta som Server");
         serverButton.setPrefSize(150, 50);
