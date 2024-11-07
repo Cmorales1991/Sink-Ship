@@ -1,4 +1,5 @@
 import Model.Attack;
+import Model.ClientUser;
 import Model.ServerUser;
 import Model.UserMap;
 
@@ -12,7 +13,11 @@ public class Main {
         // jag tog bort EnemyMap-klassen, vi kommer inte att behöva den
 
         UserMap map = new UserMap();
-        ServerUser user = new ServerUser(map);
+        ServerUser server = new ServerUser(map);
+        ClientUser client = new ClientUser(map);
+
+        server.initialize();
+        client.initialize("localhost", 6667);
 
         // viktigt: detta är inte hur programmet ska startas, det ska egentligen startas genom en Game-instans
         // visar bara lite nu hur jag tänkt med logiken
@@ -23,7 +28,7 @@ public class Main {
 
         // printa kartan för att visa hur en usermap ser ut:
 
-        map.printMap();
+        //map.printMap();
         // det är alltså koordinater och en boolean som berättar om det är en båt där elr ej :)
         // tänker att game-klassen kan konvertera koordinaterna rätt, alltså att x blir bokstäver ist
         // för det ska ju vara A,0 ist för 0,0
@@ -35,7 +40,7 @@ public class Main {
 
         // testar attackera koordinat 5,5 på vår egen karta (lol)
         Attack attack = new Attack(5,5);
-        user.takeAttack(attack.getX(), attack.getY());
+        //server.takeAttack(attack.getX(), attack.getY());
 
     }
 }
