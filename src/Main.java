@@ -2,8 +2,14 @@ import Model.Attack;
 import Model.ClientUser;
 import Model.ServerUser;
 import Model.UserMap;
+import View.ViewGame;
+import View.ViewMenu;
+import View.View;
+import javafx.animation.AnimationTimer;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Main {
+public class Main extends Application {
     public static void main(String[] args) {
 
         // PRINTAR EN MASSA SAKER HÄR FÖR ATT VISA VAD JAG GJORT XD
@@ -12,12 +18,12 @@ public class Main {
         // skapa en UserMap, vilket är kartan som tillhör denna instans av programmet
         // jag tog bort EnemyMap-klassen, vi kommer inte att behöva den
 
-        UserMap map = new UserMap();
+        /*UserMap map = new UserMap();
         ServerUser server = new ServerUser(map);
         ClientUser client = new ClientUser(map);
 
         server.initialize();
-        client.initialize("localhost", 6667);
+        client.initialize("localhost", 6667);*/
 
         // viktigt: detta är inte hur programmet ska startas, det ska egentligen startas genom en Game-instans
         // visar bara lite nu hur jag tänkt med logiken
@@ -39,8 +45,19 @@ public class Main {
         // attacker ska skickas fram och tillbaka mellan server/client :)
 
         // testar attackera koordinat 5,5 på vår egen karta (lol)
-        Attack attack = new Attack(5,5);
+        //Attack attack = new Attack(5,5);
         //server.takeAttack(attack.getX(), attack.getY());
 
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception
+    {
+        ViewGame view = new ViewGame(450, 900);
+
+        primaryStage = view.getStage();
+
+        primaryStage.show();
     }
 }
