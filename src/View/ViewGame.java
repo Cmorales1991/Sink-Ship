@@ -63,8 +63,6 @@ public class ViewGame extends View
 
         pane.getChildren().addAll(serverPane, clientPane, serverLabel, clientLabel, statusLabel);
 
-
-
     }
     // knapp för att växla på placering av skepp
     private void changeButton(AnchorPane pane) {

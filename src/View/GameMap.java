@@ -1,14 +1,9 @@
 package View;
 
-import Model.Ship;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameMap {
 
@@ -67,27 +62,40 @@ public class GameMap {
 
    // metod för att få in spellogiken och ändring visuellt
     public void updateMap(int x, int y, String status) {
+//        pane.getChildren().removeIf(node -> node instanceof ImageView &&
+//                node.getLayoutX() == x * CELL_SIZE &&
+//                node.getLayoutY() == y * CELL_SIZE);
+//
+//        if (status.equalsIgnoreCase("hit")) {
+//            // Visa en bild för en träff
+//            Image hitImage = new Image(getClass().getResource("/images/explosion.png").toExternalForm());
+//            ImageView hitImageView = new ImageView(hitImage);
+//            hitImageView.setFitWidth(CELL_SIZE);
+//            hitImageView.setFitHeight(CELL_SIZE);
+//            hitImageView.setLayoutX(x * CELL_SIZE);
+//            hitImageView.setLayoutY(y * CELL_SIZE);
+//            pane.getChildren().add(hitImageView);
+//        } else {
+            Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
+            cell.setLayoutX(x * CELL_SIZE);
+            cell.setLayoutY(y * CELL_SIZE);
 
-        Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
-        cell.setLayoutX(x * CELL_SIZE);
-        cell.setLayoutY(y * CELL_SIZE);
-
-        switch (status.toLowerCase()) {
-            case "ship":
-                cell.setFill(Color.GRAY); // placering av skepp
-                break;
-            case "hit":
-                cell.setFill(Color.RED); // Träff
-                break;
-            case "miss":
-                cell.setFill(Color.WHITE); // Miss
-                break;
-            default:
-                cell.setFill(Color.LIGHTBLUE); // Standardfärg
+            switch (status.toLowerCase()) {
+                case "ship":
+                    cell.setFill(Color.GRAY); // placering av skepp
+                    break;
+                case "hit":
+                    cell.setFill(Color.RED); // träff
+                    break;
+                case "miss":
+                    cell.setFill(Color.WHITE); //miss
+                    break;
+                default:
+                    cell.setFill(Color.LIGHTBLUE); // standardfärg
+            }
+            cell.setStroke(Color.BLACK);
+            pane.getChildren().add(cell);
         }
-        cell.setStroke(Color.BLACK);
-        pane.getChildren().add(cell);
-    }
 
     public AnchorPane getGameMapPane() {
         return pane;

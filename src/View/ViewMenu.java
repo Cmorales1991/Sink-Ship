@@ -35,10 +35,14 @@ public class ViewMenu extends View {
             if (viewGameServer == null) {
                 new Thread(() -> {
                     viewGameServer = new ViewGame(height, width, true);
-                    Platform.runLater(() -> primaryStage.setScene(viewGameServer.getScene()));
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGameServer.getScene());
+                        setTitle("Sänka Skepp - Server");  // ändrar titeln när server start väljs
+                    });
                 }).start();
             } else {
                 primaryStage.setScene(viewGameServer.getScene());
+                setTitle("Sänka Skepp - Server");  // ändrar titeln när server start väljs
             }
         });
 
@@ -52,11 +56,15 @@ public class ViewMenu extends View {
         clientButton.setOnAction(event -> {
             if (viewGameClient == null) {
                 new Thread(() -> {
-                    viewGameClient = new ViewGame(height, width, false);
-                    Platform.runLater(() -> primaryStage.setScene(viewGameClient.getScene()));
+                    viewGameClient = new ViewGame(height, width, true);
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGameServer.getScene());
+                        setTitle("Sänka Skepp - Klient");  // ändrar titeln när klient start väljs
+                    });
                 }).start();
             } else {
                 primaryStage.setScene(viewGameClient.getScene());
+                setTitle("Sänka Skepp - Klient");  // ändrar titeln när klient start väljs
             }
         });
 
@@ -71,6 +79,10 @@ public class ViewMenu extends View {
         });
 
         pane.getChildren().addAll(serverButton, clientButton, exitButton);
+    }
+
+    private void setTitle(String title) {
+        primaryStage.setTitle(title);
     }
 
     @Override
