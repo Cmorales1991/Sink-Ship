@@ -54,10 +54,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        
         ViewMenu viewMenu = new ViewMenu(500, 800, primaryStage);
         primaryStage.setScene(viewMenu.getScene());
         primaryStage.setTitle("Sänka Skepp");
         primaryStage.show();
     }
+
 }

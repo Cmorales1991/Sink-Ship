@@ -29,44 +29,16 @@ public class ViewMenu extends View {
         serverButton.setPrefSize(150, 50);
         serverButton.setLayoutX((width / 2) - 75);
         serverButton.setLayoutY((height / 2) - 60);
-
         // serverstartar när man klickar på start
-        serverButton.setOnAction(event -> {
-            if (viewGameServer == null) {
-                new Thread(() -> {
-                    viewGameServer = new ViewGame(height, width, true);
-                    Platform.runLater(() -> {
-                        primaryStage.setScene(viewGameServer.getScene());
-                        setTitle("Sänka Skepp - Server");  // ändrar titeln när server start väljs
-                    });
-                }).start();
-            } else {
-                primaryStage.setScene(viewGameServer.getScene());
-                setTitle("Sänka Skepp - Server");  // ändrar titeln när server start väljs
-            }
-        });
+        serverButton.setOnAction(event -> startServerView());
 
         // klientstart knapp
         Button clientButton = new Button("Starta som Klient");
         clientButton.setPrefSize(150, 50);
         clientButton.setLayoutX((width / 2) - 75);
         clientButton.setLayoutY((height / 2));
-
         // klientserver startar när man klickar på start
-        clientButton.setOnAction(event -> {
-            if (viewGameClient == null) {
-                new Thread(() -> {
-                    viewGameClient = new ViewGame(height, width, true);
-                    Platform.runLater(() -> {
-                        primaryStage.setScene(viewGameServer.getScene());
-                        setTitle("Sänka Skepp - Klient");  // ändrar titeln när klient start väljs
-                    });
-                }).start();
-            } else {
-                primaryStage.setScene(viewGameClient.getScene());
-                setTitle("Sänka Skepp - Klient");  // ändrar titeln när klient start väljs
-            }
-        });
+       clientButton.setOnAction(event -> startClientView());
 
         // avsluta knapp
         Button exitButton = new Button("Avsluta");
@@ -79,6 +51,33 @@ public class ViewMenu extends View {
         });
 
         pane.getChildren().addAll(serverButton, clientButton, exitButton);
+    }
+
+    public void startServerView() {
+        if (viewGameServer == null) {
+            new Thread(() -> {
+                viewGameServer = new ViewGame(height, width, true);
+                Platform.runLater(() -> showGameView(viewGameServer, "Sänka Skepp - Server"));
+            }).start();
+        } else {
+            showGameView(viewGameServer, "Sänka Skepp - Server");
+        }
+    }
+
+    public void startClientView() {
+        if (viewGameClient == null) {
+            new Thread(() -> {
+                viewGameClient = new ViewGame(height, width, false);
+                Platform.runLater(() -> showGameView(viewGameClient, "Sänka Skepp - Klient"));
+            }).start();
+        } else {
+            showGameView(viewGameClient, "Sänka Skepp - Klient");
+        }
+    }
+
+    private void showGameView(ViewGame viewGame, String title) {
+        primaryStage.setScene(viewGame.getScene());
+        setTitle(title);
     }
 
     private void setTitle(String title) {
