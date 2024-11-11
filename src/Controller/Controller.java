@@ -67,7 +67,13 @@ public class Controller {
     }
 
     public void startGame() {
+
+
+
         if (user instanceof ServerUser) {
+
+            ((ServerUser) user).initialize();
+
             while (runGame) {
                 if (user.checkLost()) {
                     System.out.println("ServerPlayer lost!");
@@ -84,6 +90,12 @@ public class Controller {
             }
         }
         if (user instanceof ClientUser) {
+
+            ((ClientUser) user).initialize("localhost", 6667);
+
+            //klienten startar spelet?
+            ((ClientUser) user).sendMessage("i + attack");
+
             while (runGame) {
                 if (user.checkLost()) {
                     System.out.println("ClientPlayer lost!");

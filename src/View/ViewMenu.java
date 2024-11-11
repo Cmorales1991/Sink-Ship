@@ -11,10 +11,14 @@ public class ViewMenu extends View {
     private ViewGame viewGameServer;
     private ViewGame viewGameClient;
 
+
+    private UserChoice userChoice;
+
     public ViewMenu(int height, int width, Stage primaryStage) {
         super(height, width);
         this.primaryStage = primaryStage;
         nextView = null;
+        userChoice = UserChoice.NO_PICK;
         new Thread(() -> {
         viewGameServer = new ViewGame(height, width, true);
         viewGameClient = new ViewGame(height, width, false);
@@ -29,16 +33,48 @@ public class ViewMenu extends View {
         serverButton.setPrefSize(150, 50);
         serverButton.setLayoutX((width / 2) - 75);
         serverButton.setLayoutY((height / 2) - 60);
+
         // serverstartar när man klickar på start
-        serverButton.setOnAction(event -> startServerView());
+        serverButton.setOnAction(event -> {
+            if (viewGameServer == null) {
+                userChoice = UserChoice.SERVER;
+                new Thread(() -> {
+                    viewGameServer = new ViewGame(height, width, true);
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGameServer.getScene());
+                        setTitle("Sänka Skepp - Server");  // ändrar titeln när server start väljs
+                    });
+                }).start();
+            } else {
+                userChoice = UserChoice.SERVER;
+                primaryStage.setScene(viewGameServer.getScene());
+                setTitle("Sänka Skepp - Server");  // ändrar titeln när server start väljs
+            }
+        });
 
         // klientstart knapp
         Button clientButton = new Button("Starta som Klient");
         clientButton.setPrefSize(150, 50);
         clientButton.setLayoutX((width / 2) - 75);
         clientButton.setLayoutY((height / 2));
+
         // klientserver startar när man klickar på start
-       clientButton.setOnAction(event -> startClientView());
+        clientButton.setOnAction(event -> {
+            if (viewGameClient == null) {
+                userChoice = UserChoice.CLIENT;
+                new Thread(() -> {
+                    viewGameClient = new ViewGame(height, width, true);
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGameServer.getScene());
+                        setTitle("Sänka Skepp - Klient");  // ändrar titeln när klient start väljs
+                    });
+                }).start();
+            } else {
+                userChoice = UserChoice.CLIENT;
+                primaryStage.setScene(viewGameClient.getScene());
+                setTitle("Sänka Skepp - Klient");  // ändrar titeln när klient start väljs
+            }
+        });
 
         // avsluta knapp
         Button exitButton = new Button("Avsluta");
@@ -53,33 +89,6 @@ public class ViewMenu extends View {
         pane.getChildren().addAll(serverButton, clientButton, exitButton);
     }
 
-    public void startServerView() {
-        if (viewGameServer == null) {
-            new Thread(() -> {
-                viewGameServer = new ViewGame(height, width, true);
-                Platform.runLater(() -> showGameView(viewGameServer, "Sänka Skepp - Server"));
-            }).start();
-        } else {
-            showGameView(viewGameServer, "Sänka Skepp - Server");
-        }
-    }
-
-    public void startClientView() {
-        if (viewGameClient == null) {
-            new Thread(() -> {
-                viewGameClient = new ViewGame(height, width, false);
-                Platform.runLater(() -> showGameView(viewGameClient, "Sänka Skepp - Klient"));
-            }).start();
-        } else {
-            showGameView(viewGameClient, "Sänka Skepp - Klient");
-        }
-    }
-
-    private void showGameView(ViewGame viewGame, String title) {
-        primaryStage.setScene(viewGame.getScene());
-        setTitle(title);
-    }
-
     private void setTitle(String title) {
         primaryStage.setTitle(title);
     }
@@ -87,5 +96,10 @@ public class ViewMenu extends View {
     @Override
     public View update() {
         return nextView;
+    }
+
+    public UserChoice getUserChoice()
+    {
+        return userChoice;
     }
 }
