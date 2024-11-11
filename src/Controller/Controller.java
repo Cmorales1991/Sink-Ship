@@ -68,8 +68,6 @@ public class Controller {
 
     public void startGame() {
 
-
-
         if (user instanceof ServerUser) {
 
             ((ServerUser) user).initialize();

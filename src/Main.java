@@ -47,7 +47,7 @@ public class Main extends Application {
             do {
                 userInput = viewMenu.getUserChoice();
 
-                //System.out.println(userInput);
+//                System.out.println(userInput);
 
                 if (userInput == UserChoice.SERVER)
                 {

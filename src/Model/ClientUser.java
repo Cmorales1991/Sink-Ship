@@ -28,7 +28,7 @@ public class ClientUser extends User
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
-            System.out.println("Connected to " + host + ":" + port);
+            System.out.println("Anslutit till " + host + ":" + port);
 
             new Thread(()-> {
                 try {

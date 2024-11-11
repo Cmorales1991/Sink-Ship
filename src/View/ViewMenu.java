@@ -36,6 +36,7 @@ public class ViewMenu extends View {
 
         // serverstartar när man klickar på start
         serverButton.setOnAction(event -> {
+            System.out.println("Startar spelet som server");
             if (viewGameServer == null) {
                 userChoice = UserChoice.SERVER;
                 new Thread(() -> {
@@ -60,6 +61,7 @@ public class ViewMenu extends View {
 
         // klientserver startar när man klickar på start
         clientButton.setOnAction(event -> {
+            System.out.println("Startar spelet som klient");
             if (viewGameClient == null) {
                 userChoice = UserChoice.CLIENT;
                 new Thread(() -> {

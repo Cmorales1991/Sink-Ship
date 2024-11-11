@@ -25,7 +25,8 @@ public class ServerUser extends User
         try
         {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Server started on port " + PORT);
+            System.out.println("Server startat i port: " + PORT);
+            System.out.println("Väntar på att klienten ansluter...");
         }
         catch (IOException e)
         {
@@ -37,7 +38,7 @@ public class ServerUser extends User
             try
             {
                 Socket client = serverSocket.accept();
-                System.out.println("Client connected");
+                System.out.println("Klienten har anslutit");
 
                 input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 output = new PrintWriter(new OutputStreamWriter(client.getOutputStream()), true);
