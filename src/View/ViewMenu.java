@@ -11,10 +11,14 @@ public class ViewMenu extends View {
     private ViewGame viewGameServer;
     private ViewGame viewGameClient;
 
+
+    private UserChoice userChoice;
+
     public ViewMenu(int height, int width, Stage primaryStage) {
         super(height, width);
         this.primaryStage = primaryStage;
         nextView = null;
+        userChoice = UserChoice.NO_PICK;
         new Thread(() -> {
         viewGameServer = new ViewGame(height, width, true);
         viewGameClient = new ViewGame(height, width, false);
@@ -33,6 +37,7 @@ public class ViewMenu extends View {
         // serverstartar när man klickar på start
         serverButton.setOnAction(event -> {
             if (viewGameServer == null) {
+                userChoice = UserChoice.SERVER;
                 new Thread(() -> {
                     viewGameServer = new ViewGame(height, width, true);
                     Platform.runLater(() -> {
@@ -41,6 +46,7 @@ public class ViewMenu extends View {
                     });
                 }).start();
             } else {
+                userChoice = UserChoice.SERVER;
                 primaryStage.setScene(viewGameServer.getScene());
                 setTitle("Sänka Skepp - Server");  // ändrar titeln när server start väljs
             }
@@ -55,6 +61,7 @@ public class ViewMenu extends View {
         // klientserver startar när man klickar på start
         clientButton.setOnAction(event -> {
             if (viewGameClient == null) {
+                userChoice = UserChoice.CLIENT;
                 new Thread(() -> {
                     viewGameClient = new ViewGame(height, width, true);
                     Platform.runLater(() -> {
@@ -63,6 +70,7 @@ public class ViewMenu extends View {
                     });
                 }).start();
             } else {
+                userChoice = UserChoice.CLIENT;
                 primaryStage.setScene(viewGameClient.getScene());
                 setTitle("Sänka Skepp - Klient");  // ändrar titeln när klient start väljs
             }
@@ -88,5 +96,10 @@ public class ViewMenu extends View {
     @Override
     public View update() {
         return nextView;
+    }
+
+    public UserChoice getUserChoice()
+    {
+        return userChoice;
     }
 }

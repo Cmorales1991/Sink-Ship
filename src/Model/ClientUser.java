@@ -30,9 +30,15 @@ public class ClientUser extends User
 
             System.out.println("Connected to " + host + ":" + port);
 
-            sendMessage("Hello :)");
-
-            new Thread(()->handleServer()).start();
+            new Thread(()-> {
+                try {
+                    handleServer();
+                }
+                catch (InterruptedException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }).start();
         }
         catch (IOException e)
         {
@@ -52,8 +58,7 @@ public class ClientUser extends User
         }
     }
 
-    private void handleServer()
-    {
+    private void handleServer() throws InterruptedException {
         String messageFromServer = null;
 
         do
@@ -68,6 +73,9 @@ public class ClientUser extends User
             {
                 throw new RuntimeException(e);
             }
+
+            Thread.sleep(2000);
+
         }while(!messageFromServer.equals("game over"));
 
         try

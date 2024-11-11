@@ -78,10 +78,17 @@ public class ServerUser extends User
                     messageFromClient = input.readLine();
                     System.out.println("Message from Client: " + messageFromClient);
                     lastMessageReceived = messageFromClient;
-
-                    sendMessageToClient("game over");
                 }
                 catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+
+                try
+                {
+                    Thread.sleep(2000);
+                }
+                catch (InterruptedException e)
                 {
                     throw new RuntimeException(e);
                 }
@@ -101,6 +108,7 @@ public class ServerUser extends User
             {
                 throw new RuntimeException(e);
             }
+
         }).start();
     }
 
