@@ -1,14 +1,22 @@
 package Model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class UserMap extends Map {
+public class UserMap {
 
+    private List<Coordinate> map = new ArrayList<>();
     private final int MAP_SIZE = 10;
     private final int[] SHIPS = {5, 4, 4, 3, 3, 3, 2, 2, 2, 2};
 
     public UserMap() {
-        super();
+        // Create empty map, 10x10
+        for(int i = 0; i < 10; i++) {
+            for(int j = 0; j < 10; j++) {
+                map.add(new Coordinate(i, j, false));
+            }
+        }
         placeShips();
     }
 
@@ -88,7 +96,6 @@ public class UserMap extends Map {
     }
 
     // METHOD FOR TESTING
-    @Override
     public void printMap() {
         System.out.println("UserMap:");
         for(Coordinate c : map) {
