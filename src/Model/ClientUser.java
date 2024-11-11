@@ -13,6 +13,8 @@ public class ClientUser extends User
     private BufferedReader input;
     private PrintWriter output;
 
+    private String lastMessageReceived;
+
     public ClientUser(UserMap map)
     {
         super(map);
@@ -60,6 +62,7 @@ public class ClientUser extends User
             {
                 messageFromServer = input.readLine();
                 System.out.println("Message from Server: " + messageFromServer);
+                lastMessageReceived = messageFromServer;
             }
             catch (Exception e)
             {
@@ -76,5 +79,10 @@ public class ClientUser extends User
         {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getLastMessageReceived()
+    {
+        return lastMessageReceived;
     }
 }

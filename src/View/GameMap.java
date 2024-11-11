@@ -75,8 +75,13 @@ public class GameMap {
 //            hitImageView.setLayoutX(x * CELL_SIZE);
 //            hitImageView.setLayoutY(y * CELL_SIZE);
 //            pane.getChildren().add(hitImageView);
+//            return;
 //        } else {
-            Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
+        // Rensa eventuell befintlig cell vid dessa koordinater
+        pane.getChildren().removeIf(node ->
+                node instanceof Rectangle && node.getLayoutX() == x * CELL_SIZE && node.getLayoutY() == y * CELL_SIZE);
+
+        Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
             cell.setLayoutX(x * CELL_SIZE);
             cell.setLayoutY(y * CELL_SIZE);
 

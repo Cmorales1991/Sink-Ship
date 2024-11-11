@@ -1,6 +1,6 @@
 //package View;
 //
-//import Model.Ship;
+//import View.Ship;
 //import javafx.application.Application;
 //import javafx.scene.Scene;
 //import javafx.scene.control.Label;
