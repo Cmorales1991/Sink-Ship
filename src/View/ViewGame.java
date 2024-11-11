@@ -15,11 +15,6 @@ public class ViewGame extends View
 
     public ViewGame(int height, int width, boolean isServer) {
         super(height, width);
-//        if (isServer) {
-//            System.out.println("Startar spelet som Server");
-//        } else {
-//            System.out.println("Startar spelet som Klient");
-//        }
         init(isServer);
     }
 
