@@ -1,14 +1,9 @@
 package View;
 
-import Model.Ship;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameMap {
 
@@ -17,13 +12,12 @@ public class GameMap {
     private AnchorPane pane;
     private boolean isPlayer;
     public boolean isHorizontal = true; // Standardplacering allstå horisonellt
-    private List<Ship> placedShips;
+    private Rectangle[][] cells;
 
     public GameMap(boolean isPlayer) {
         this.isPlayer = isPlayer;
-        this.placedShips = new ArrayList<>();
         pane = new AnchorPane(); // en AnchorPane för mapen
-        changeButton(isPlayer);
+        cells = new Rectangle[GRID_SIZE][GRID_SIZE];
         drawGrid();
     }
 
@@ -41,20 +35,6 @@ public class GameMap {
         }
     }
 
-    private void changeButton(boolean isPlayer) {
-        // en knapp för att växla placering mellan horisontell och vertikal
-        if (this.isPlayer) {
-            Button toggleButton = new Button("Växla placering");
-            toggleButton.setLayoutX(100);
-            toggleButton.setLayoutY(GRID_SIZE * CELL_SIZE + 30);
-            toggleButton.setOnAction(event -> {
-                isHorizontal = !isHorizontal; // Växla placering mellan horiontell o vetrikal
-            });
-            pane.getChildren().add(toggleButton);
-        }
-
-    }
-
     private void addCoordinateLabels(AnchorPane pane) {
         // bokstavsmarkeringar för y-axeln (A-J)
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -67,7 +47,6 @@ public class GameMap {
             rowLabelRight.setLayoutY(i * CELL_SIZE + CELL_SIZE / 4);
             pane.getChildren().addAll(rowLabelLeft, rowLabelRight);
         }
-
         // siffermarkeringar för x-axeln (0-9)
         for (int i = 0; i < GRID_SIZE; i++) {
             Label colLabelTop = new Label(String.valueOf(i));
@@ -81,9 +60,44 @@ public class GameMap {
         }
     }
 
+   // metod för att få in spellogiken och ändring visuellt
+    public void updateMap(int x, int y, String status) {
+//        pane.getChildren().removeIf(node -> node instanceof ImageView &&
+//                node.getLayoutX() == x * CELL_SIZE &&
+//                node.getLayoutY() == y * CELL_SIZE);
+//
+//        if (status.equalsIgnoreCase("hit")) {
+//            // Visa en bild för en träff
+//            Image hitImage = new Image(getClass().getResource("/images/explosion.png").toExternalForm());
+//            ImageView hitImageView = new ImageView(hitImage);
+//            hitImageView.setFitWidth(CELL_SIZE);
+//            hitImageView.setFitHeight(CELL_SIZE);
+//            hitImageView.setLayoutX(x * CELL_SIZE);
+//            hitImageView.setLayoutY(y * CELL_SIZE);
+//            pane.getChildren().add(hitImageView);
+//        } else {
+            Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
+            cell.setLayoutX(x * CELL_SIZE);
+            cell.setLayoutY(y * CELL_SIZE);
+
+            switch (status.toLowerCase()) {
+                case "ship":
+                    cell.setFill(Color.GRAY); // placering av skepp
+                    break;
+                case "hit":
+                    cell.setFill(Color.RED); // träff
+                    break;
+                case "miss":
+                    cell.setFill(Color.WHITE); //miss
+                    break;
+                default:
+                    cell.setFill(Color.LIGHTBLUE); // standardfärg
+            }
+            cell.setStroke(Color.BLACK);
+            pane.getChildren().add(cell);
+        }
+
     public AnchorPane getGameMapPane() {
         return pane;
     }
-
-
 }
