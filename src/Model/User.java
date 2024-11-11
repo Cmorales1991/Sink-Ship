@@ -14,7 +14,7 @@ public abstract class User {
     }
 
     // ATTACK WILL BE SENT TO ENEMY PLAYER (SERVER OR CLIENT) THROUGH GAME CLASS
-    public Attack attack() {
+    public Attack performAttack() {
 
         Attack performedAttack;
         Random rand = new Random();
@@ -37,5 +37,9 @@ public abstract class User {
 
     public void takeAttack(int x, int y) {
         map.takeAttack(x,y);
+    }
+
+    public boolean checkLost() {
+        return map.checkLost();
     }
 }

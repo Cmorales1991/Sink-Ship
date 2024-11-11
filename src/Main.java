@@ -18,6 +18,14 @@ public class Main extends Application {
         server.initialize();
         client.initialize("localhost", 6667); */
 
+        /* om användaren trycker på Server så skapas en ServerUser, annars skapas en ClientUser, och
+        de skickas till controllern såhär:
+        (användaren trycker på clientuser)
+
+        ClientUser user = new ClientUser(map);
+        Controller controller = new Controller(user, view);
+         */
+
         launch(args);
     }
 
@@ -28,13 +36,5 @@ public class Main extends Application {
         primaryStage.setScene(viewMenu.getScene());
         primaryStage.setTitle("Sänka Skepp");
         primaryStage.show();
-
-        /* om användaren trycker på Server så skapas en ServerUser, annars skapas en ClientUser, och
-        de skickas till controllern såhär:
-        (användaren trycker på clientuser)
-        ClientUser user = new ClientUser(map);
-        Game game = new Game(user);
-        Controller controller = new Controller(game, view);
-         */
     }
 }
