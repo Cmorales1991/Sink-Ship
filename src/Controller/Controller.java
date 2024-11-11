@@ -71,15 +71,15 @@ public class Controller {
             while (runGame) {
                 if (user.checkLost()) {
                     System.out.println("ServerPlayer lost!");
-                    // skicka meddelande till klient att servern förlorat
+                    // skicka meddelande till klient att servern förlorat om checkLost() returnerar true
                     runGame = false;
                 }
                 else {
                     // user gör turn eller väntar på att motståndaren ska göra sin turn
-                    // tar emot data, uppdaterar map i User
-                    // uppdaterar view så att ändringarna syns visuellt
+                    // tar emot eller skickar data, uppdaterar map i User om beskjuten
                     // user.takeAttack() och user.performAttack() kallas här baserat på vad som händer
-                    // och skickas väl in i user.sendMessage() som argument
+                    // skickas väl in i user.sendMessage() som argument om någon ska skickas iväg
+                    // uppdaterar slutligen view så att ändringarna syns visuellt, med view.update(user.getMap)
                 }
             }
         }
@@ -87,7 +87,7 @@ public class Controller {
             while (runGame) {
                 if (user.checkLost()) {
                     System.out.println("ClientPlayer lost!");
-                    // skicka meddelande till servern att klienten förlorat
+                    // skicka meddelande till servern att klienten förlorat om checkLost() returnerar true
                     runGame = false;
                 }
                 else {

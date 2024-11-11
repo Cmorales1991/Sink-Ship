@@ -42,4 +42,8 @@ public abstract class User {
     public boolean checkLost() {
         return map.checkLost();
     }
+
+    public UserMap getMap() {
+        return map;
+    }
 }
