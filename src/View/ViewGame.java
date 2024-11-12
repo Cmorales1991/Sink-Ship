@@ -51,23 +51,24 @@ public class ViewGame extends View
 
         // växla knappen visas efter val av spelplan (server eller klient)
         if (isServer) {
-            changeButton(serverPane);
+            changeButton(serverMap.getGameMapPane(), serverMap);
         } else {
-            changeButton(clientPane);
+            changeButton(clientMap.getGameMapPane(), clientMap);
         }
 
         pane.getChildren().addAll(serverPane, clientPane, serverLabel, clientLabel, statusLabel);
 
     }
     // knapp för att växla på placering av skepp
-    private void changeButton(AnchorPane pane) {
+    private void changeButton(AnchorPane pane, GameMap map) {
         Button toggleButton = new Button("Växla placering");
         toggleButton.setLayoutX(100);
         toggleButton.setLayoutY(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 30);
         toggleButton.setOnAction(event -> {
-            boolean isHorizontal = !serverMap.isHorizontal;
-            toggleButton.setText(isHorizontal ? "Placera horisontellt" : "Placera vertikalt");
+            map.isHorizontal = !map.isHorizontal;
+            toggleButton.setText(map.isHorizontal ? "Placera horisontellt" : "Placera vertikalt");
         });
+
         pane.getChildren().add(toggleButton);
     }
 
