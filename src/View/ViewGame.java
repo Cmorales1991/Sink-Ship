@@ -8,9 +8,7 @@ import javafx.scene.paint.Color;
 public class ViewGame extends View
 {
     private GameMap serverMap, clientMap;
-
     private AnchorPane serverPane, clientPane;
-
     private Label serverLabel, clientLabel, statusLabel;
 
     public ViewGame(int height, int width, boolean isServer) {
@@ -50,27 +48,25 @@ public class ViewGame extends View
         statusLabel.setLayoutY(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 110);
 
         // växla knappen visas efter val av spelplan (server eller klient)
-        if (isServer) {
-            changeButton(serverMap.getGameMapPane(), serverMap);
-        } else {
-            changeButton(clientMap.getGameMapPane(), clientMap);
-        }
-
+//        if (isServer) {
+//            changeButton(serverPane);
+//        } else {
+//            changeButton(clientPane);
+//        }
         pane.getChildren().addAll(serverPane, clientPane, serverLabel, clientLabel, statusLabel);
 
     }
     // knapp för att växla på placering av skepp
-    private void changeButton(AnchorPane pane, GameMap map) {
-        Button toggleButton = new Button("Växla placering");
-        toggleButton.setLayoutX(100);
-        toggleButton.setLayoutY(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 30);
-        toggleButton.setOnAction(event -> {
-            map.isHorizontal = !map.isHorizontal;
-            toggleButton.setText(map.isHorizontal ? "Placera horisontellt" : "Placera vertikalt");
-        });
-
-        pane.getChildren().add(toggleButton);
-    }
+//    private void changeButton(AnchorPane pane) {
+//        Button toggleButton = new Button("Växla placering");
+//        toggleButton.setLayoutX(100);
+//        toggleButton.setLayoutY(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 30);
+//        toggleButton.setOnAction(event -> {
+//            boolean isHorizontal = !serverMap.isHorizontal;
+//            toggleButton.setText(isHorizontal ? "Placera horisontellt" : "Placera vertikalt");
+//        });
+//        pane.getChildren().add(toggleButton);
+//    }
 
     @Override
     public View update()

@@ -43,7 +43,6 @@ public class Main extends Application {
         new Thread(() ->
         {
             UserChoice userInput;
-
             do {
                 userInput = viewMenu.getUserChoice();
 
