@@ -98,8 +98,8 @@ public class Controller {
         return new Attack(x, y);
     }
 
-    private String createString(String coordinate) {
-        return "m shot " + coordinate;
+    private String createString(String code, String coordinate) {
+        return code + " shot " + coordinate;
     }
 
     public void startGame() {
@@ -110,7 +110,11 @@ public class Controller {
         } else if (user instanceof ClientUser) {
             ClientUser client = (ClientUser) user;
             client.initialize("localhost", 6667);
-            client.sendMessage(createString(reformatSentAttack(user.performAttack())));
+
+            // Anropa createString med "i" för att indikera att klienten skjuter första skottet
+            String firstAttackMessage = createString("i", reformatSentAttack(user.performAttack()));
+            client.sendMessage(firstAttackMessage);
+
             runClientGameLoop(client);
         }
     }
@@ -158,21 +162,45 @@ public class Controller {
             Attack takenAttack = reformatTakenAttack(message.split(" ")[2]);
             user.takeAttack(takenAttack.getX(), takenAttack.getY());
 
-            String attackResult = user.getMap().checkLost() ? "hit" : "miss";
-            view.updateMap(takenAttack.getX(), takenAttack.getY(), attackResult);
-            view.update();
+            // Kontrollera resultatet av motståndarens skott
+            boolean isHit = user.getMap().checkHit(takenAttack.getX(), takenAttack.getY());
+            boolean isSunk = user.getMap().checkSunk(takenAttack.getX(), takenAttack.getY());
+            boolean isGameOver = user.getMap().checkLost();
 
-            Attack nextAttack = user.performAttack();
-            String nextAttackMessage = createString(reformatSentAttack(nextAttack));
+            // Välj rätt kod baserat på resultatet av skottet
+            String code;
+            if (isGameOver) {
+                code = "game over";
+                System.out.println("Game Over, stopping game.");
+                runGame = false;
+            } else {
+                if (isSunk) {
+                    code = "s"; // Sänkt skepp
+                } else if (isHit) {
+                    code = "h"; // Träff
+                } else {
+                    code = "m"; // Miss
+                }
 
-            if (user instanceof ServerUser) {
-                ((ServerUser) user).sendMessageToClient(nextAttackMessage);
-            } else if (user instanceof ClientUser) {
-                ((ClientUser) user).sendMessage(nextAttackMessage);
+                // Uppdatera vyn med resultatet av motståndarens skott
+                view.updateMap(takenAttack.getX(), takenAttack.getY(), isHit ? "hit" : "miss");
+                view.update();
+
+                // Skapa nästa attack och meddelande att skicka
+                Attack nextAttack = user.performAttack();
+                String nextAttackMessage = createString(code, reformatSentAttack(nextAttack));
+
+                // Skicka nästa attackmeddelande till motståndaren
+                if (user instanceof ServerUser) {
+                    ((ServerUser) user).sendMessageToClient(nextAttackMessage);
+                } else if (user instanceof ClientUser) {
+                    ((ClientUser) user).sendMessage(nextAttackMessage);
+                }
             }
         } else if (message.equals("game over")) {
             System.out.println("Game Over, stopping game.");
             runGame = false;
         }
     }
+
 }
