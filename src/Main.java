@@ -6,15 +6,20 @@ import View.UserChoice;
 import View.ViewGame;
 import View.ViewMenu;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import Model.Coordinate;
 
-public class Main extends Application {
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class Main extends Application
+{
+    AtomicBoolean shutdown = new AtomicBoolean(false);
+
     public static void main(String[] args) {
 
         /* Randomly generated UserMap to pass as argument to either ClientUser or ServerUser,
         depending on the user's choice. */
-        UserMap map = new UserMap();
 
         /* ServerUser server = new ServerUser(map);
         ClientUser client = new ClientUser(map);
@@ -34,20 +39,23 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage)
+    {
         ViewMenu viewMenu = new ViewMenu(500, 800, primaryStage);
+
         primaryStage.setScene(viewMenu.getScene());
         primaryStage.setTitle("Sänka Skepp");
-        primaryStage.show();
 
-        new Thread(() ->
-        {
+        primaryStage.setOnCloseRequest(event -> {
+            shutdown.set(true);
+        });
+
+        Thread thread = new Thread(() -> {
+
             UserChoice userInput;
 
             do {
                 userInput = viewMenu.getUserChoice();
-
-//                System.out.println(userInput);
 
                 if (userInput == UserChoice.SERVER)
                 {
@@ -75,9 +83,23 @@ public class Main extends Application {
                     throw new RuntimeException(e);
                 }
 
-            } while (userInput == UserChoice.NO_PICK);
+            } while (!shutdown.get());
+        });
 
-        }).start();
+        thread.setName("Menu thread");
+
+        //Genom att sätta en tråds Daemon-variabel till true så kommer tråden automatiskt stängas av när programmet stängs av.
+
+        thread.setDaemon(true);
+        thread.start();
+
+        primaryStage.show();
+    }
+
+    @Override
+    public void stop()
+    {
+        shutdown.set(true);
     }
 
 }

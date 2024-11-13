@@ -33,7 +33,7 @@ public class ServerUser extends User
             throw new RuntimeException(e);
         }
 
-        new Thread(()-> {
+        Thread thread = new Thread(()-> {
 
             try
             {
@@ -50,7 +50,9 @@ public class ServerUser extends User
                 throw new RuntimeException(e);
             }
 
-        }).start();
+        });
+        thread.setName("Waiting for Client thread");
+        thread.start();
 
     }
 
