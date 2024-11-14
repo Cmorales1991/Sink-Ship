@@ -84,6 +84,22 @@ public class UserMap {
         }
     }
 
+    public boolean checkHit(int x, int y) {
+        Coordinate coord = getCoordinate(x, y);
+        return coord != null && coord.isShip() && !coord.isDestroyed();
+    }
+
+    // Metod för att kontrollera om ett skott sänker ett skepp
+    public boolean checkSunk(int x, int y) {
+        Coordinate coord = getCoordinate(x, y);
+        if (coord == null || !coord.isShip()) return false;
+
+        // Kontrollera om alla delar av skeppet är förstörda
+        return map.stream()
+                .filter(c -> c.isShip() && !c.isDestroyed())
+                .noneMatch(c -> c.getX() == x && c.getY() == y);
+    }
+
     public boolean checkLost() {
         boolean noShips = true;
 

@@ -68,6 +68,15 @@ public class ViewGame extends View
 //        pane.getChildren().add(toggleButton);
 //    }
 
+    public void updateMap(int x, int y, String status) {
+        // Om det är en serveranvändare, uppdatera klientens karta (och vice versa)
+        if (status.equalsIgnoreCase("server")) {
+            clientMap.updateMap(x, y, status);
+        } else {
+            serverMap.updateMap(x, y, status);
+        }
+    }
+
     @Override
     public View update()
     {
