@@ -30,15 +30,20 @@ public class ClientUser extends User
 
             System.out.println("Anslutit till " + host + ":" + port);
 
-            new Thread(()-> {
-                try {
+            Thread thread = new Thread(()->{
+
+                try
+                {
                     handleServer();
                 }
                 catch (InterruptedException e)
                 {
                     throw new RuntimeException(e);
                 }
-            }).start();
+            });
+
+            thread.setName("Client thread");
+            thread.start();
         }
         catch (IOException e)
         {

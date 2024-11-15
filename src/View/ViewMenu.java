@@ -20,8 +20,8 @@ public class ViewMenu extends View {
         nextView = null;
         userChoice = UserChoice.NO_PICK;
         new Thread(() -> {
-        viewGameServer = new ViewGame(height, width, true);
-        viewGameClient = new ViewGame(height, width, false);
+            viewGameServer = new ViewGame(height, width, true);
+            viewGameClient = new ViewGame(height, width, false);
         }).start();
         init(true);
     }
