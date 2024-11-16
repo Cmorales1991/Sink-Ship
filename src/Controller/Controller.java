@@ -1,10 +1,8 @@
 package Controller;
 
-import Model.Attack;
-import Model.ClientUser;
-import Model.ServerUser;
-import Model.User;
+import Model.*;
 import View.ViewGame;
+import javafx.application.Platform;
 
 public class Controller {
 
@@ -15,6 +13,20 @@ public class Controller {
     public Controller(User user, ViewGame view) {
         this.user = user;
         this.view = view;
+
+        Platform.runLater(() -> {
+            System.out.println("Current thread: " + Thread.currentThread().getName());
+            // Place ships in view
+            for (int x = 0; x < 10; x++) {
+                for (int y = 0; y < 10; y++) {
+                    Coordinate coord = user.getMap().getCoordinate(x, y);
+                    if (coord != null && coord.isShip()) {
+                        System.out.println("Placing ship on: " + x + " ," + y);
+                        view.updateMap(x, y, "s", user instanceof ServerUser);
+                    }
+                }
+            }
+        });
     }
 
     private String reformatSentAttack(Attack attack) {
@@ -157,6 +169,18 @@ public class Controller {
         System.out.println("Client game loop ended.");
     }
 
+    // WIP
+    public void updateCoordinate(int x, int y, boolean isServer, boolean isHit) {
+        String status;
+        if (isHit) {
+            status = "h";
+        }
+        else {
+            status = "m";
+        }
+        view.updateMap(x, y, status, isServer);
+    }
+
     private void handleIncomingMessage(User user, String message) {
         if (message.contains("shot")) {
 
@@ -173,6 +197,9 @@ public class Controller {
             if (wasHit && user.getMap().checkIfShipSunk(takenAttack.getX(), takenAttack.getY())) {
                 result = "s";
             }
+
+            // funkar ej härifrån heller
+            // view.updateMap(4,4, "s", true);
 
             Attack nextAttack = user.performAttack();
             String nextAttackMessage = createMessage(result, reformatSentAttack(nextAttack));

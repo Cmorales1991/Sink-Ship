@@ -1,9 +1,11 @@
 package View;
 
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.w3c.dom.css.Rect;
 
 public class GameMap {
 
@@ -16,21 +18,31 @@ public class GameMap {
 
     public GameMap(boolean isPlayer) {
         this.isPlayer = isPlayer;
-        pane = new AnchorPane(); // en AnchorPane för mapen
         cells = new Rectangle[GRID_SIZE][GRID_SIZE];
         drawGrid();
+        pane = new AnchorPane(); // en AnchorPane för mapen
+        addCoordinateLabels(pane);
+
+        for (int x = 0; x < GRID_SIZE; x++) {
+            for (int y = 0; y < GRID_SIZE; y++) {
+                pane.getChildren().add(cells[x][y]);
+            }
+        }
+
+        // Fungerar
+        updateMap(3,4,"s");
     }
 
     private void drawGrid() {
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
+        for (int x = 0; x < GRID_SIZE; x++) {
+            for (int y = 0; y < GRID_SIZE; y++) {
                 Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
                 cell.setFill(Color.LIGHTBLUE);
                 cell.setStroke(Color.BLACK);
-                cell.setLayoutX(i * CELL_SIZE);
-                cell.setLayoutY(j * CELL_SIZE);
-                pane.getChildren().add(cell);
-                addCoordinateLabels(pane);
+                cell.setLayoutX(x * CELL_SIZE);
+                cell.setLayoutY(y * CELL_SIZE);
+
+                cells[x][y] = cell; // Save cell
             }
         }
     }
@@ -60,47 +72,33 @@ public class GameMap {
         }
     }
 
-   // metod för att få in spellogiken och ändring visuellt
     public void updateMap(int x, int y, String status) {
-//        pane.getChildren().removeIf(node -> node instanceof ImageView &&
-//                node.getLayoutX() == x * CELL_SIZE &&
-//                node.getLayoutY() == y * CELL_SIZE);
-//
-//        if (status.equalsIgnoreCase("hit")) {
-//            // Visa en bild för en träff
-//            Image hitImage = new Image(getClass().getResource("/images/explosion.png").toExternalForm());
-//            ImageView hitImageView = new ImageView(hitImage);
-//            hitImageView.setFitWidth(CELL_SIZE);
-//            hitImageView.setFitHeight(CELL_SIZE);
-//            hitImageView.setLayoutX(x * CELL_SIZE);
-//            hitImageView.setLayoutY(y * CELL_SIZE);
-//            pane.getChildren().add(hitImageView);
-//            return;
-//        } else {
-        // Rensa eventuell befintlig cell vid dessa koordinater
-        pane.getChildren().removeIf(node ->
-                node instanceof Rectangle && node.getLayoutX() == x * CELL_SIZE && node.getLayoutY() == y * CELL_SIZE);
-
-        Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
-            cell.setLayoutX(x * CELL_SIZE);
-            cell.setLayoutY(y * CELL_SIZE);
-
+        Platform.runLater(() -> {
+            if (cells[x][y] == null) {
+                System.out.println("No cell found at: (" + x + ", " + y + ")");
+                return;
+            }
             switch (status.toLowerCase()) {
-                case "ship":
-                    cell.setFill(Color.GRAY); // placering av skepp
+                case "s":
+                    cells[x][y].setFill(Color.GREEN); // ship
                     break;
-                case "hit":
-                    cell.setFill(Color.RED); // träff
+                case "h":
+                    cells[x][y].setFill(Color.RED); // hit
                     break;
-                case "miss":
-                    cell.setFill(Color.WHITE); //miss
+                case "m":
+                    cells[x][y].setFill(Color.WHITE); // miss
                     break;
                 default:
-                    cell.setFill(Color.LIGHTBLUE); // standardfärg
+                    cells[x][y].setFill(Color.LIGHTBLUE); // empty
+                    break;
             }
-            cell.setStroke(Color.BLACK);
-            pane.getChildren().add(cell);
-        }
+            // Force update
+            pane.getChildren().remove(cells[x][y]);
+            pane.getChildren().add(cells[x][y]);
+            pane.requestLayout();
+        });
+    }
+
 
     public AnchorPane getGameMapPane() {
         return pane;

@@ -20,8 +20,7 @@ public class Main extends Application
     }
 
     @Override
-    public void start(Stage primaryStage)
-    {
+    public void start(Stage primaryStage) {
         ViewMenu viewMenu = new ViewMenu(500, 800, primaryStage);
 
         primaryStage.setScene(viewMenu.getScene());
@@ -32,39 +31,32 @@ public class Main extends Application
         });
 
         Thread thread = new Thread(() -> {
-
             UserChoice userInput;
 
             do {
                 userInput = viewMenu.getUserChoice();
-
-                if (userInput == UserChoice.SERVER)
-                {
+                if (userInput == UserChoice.SERVER) {
                     UserMap map = new UserMap();
                     ServerUser server = new ServerUser(map);
                     Controller controller = new Controller(server, new ViewGame(500, 800, true));
                     controller.startGame();
                     break;
                 }
-                else if (userInput == UserChoice.CLIENT)
-                {
+                else if (userInput == UserChoice.CLIENT) {
                     UserMap map = new UserMap();
                     ClientUser client = new ClientUser(map);
                     Controller controller = new Controller(client, new ViewGame(500, 800, false));
                     controller.startGame();
                     break;
                 }
-
-                try
-                {
+                try {
                     Thread.sleep(500);
                 }
-                catch (InterruptedException e)
-                {
+                catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-
-            } while (!shutdown.get());
+            }
+            while (!shutdown.get());
         });
 
         thread.setName("Menu thread");

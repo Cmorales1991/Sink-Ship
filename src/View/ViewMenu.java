@@ -11,7 +11,6 @@ public class ViewMenu extends View {
     private ViewGame viewGameServer;
     private ViewGame viewGameClient;
 
-
     private UserChoice userChoice;
 
     public ViewMenu(int height, int width, Stage primaryStage) {

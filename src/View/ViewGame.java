@@ -1,6 +1,7 @@
 package View;
 
-import javafx.scene.control.Button;
+import javafx.application.Platform;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -8,9 +9,7 @@ import javafx.scene.paint.Color;
 public class ViewGame extends View
 {
     private GameMap serverMap, clientMap;
-
     private AnchorPane serverPane, clientPane;
-
     private Label serverLabel, clientLabel, statusLabel;
 
     public ViewGame(int height, int width, boolean isServer) {
@@ -49,18 +48,24 @@ public class ViewGame extends View
 
     }
 
-    public void updateMap(int x, int y, String status) {
-        // Om det är en serveranvändare, uppdatera klientens karta (och vice versa)
-        if (status.equalsIgnoreCase("server")) {
-            clientMap.updateMap(x, y, status);
-        } else {
-            serverMap.updateMap(x, y, status);
-        }
+    public void updateMap(int x, int y, String status, boolean ifServerMap) {
+        System.out.println("Updating Map: x=" + x + ", y=" + y + ", status=" + status + ", isServer=" + ifServerMap);
+        Platform.runLater(() -> {
+            if (ifServerMap) {
+                serverMap.updateMap(x, y, status);
+            } else {
+                clientMap.updateMap(x, y, status);
+            }
+        });
     }
 
     @Override
     public View update()
     {
         return this;
+    }
+
+    public AnchorPane getPane() {
+        return pane;
     }
 }
