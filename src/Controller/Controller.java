@@ -98,8 +98,8 @@ public class Controller {
         return new Attack(x, y);
     }
 
-    private String createString(String coordinate) {
-        return "m shot " + coordinate;
+    private String createMessage(String result, String coordinate) {
+        return result + " shot " + coordinate;
     }
 
     public void startGame() {
@@ -110,68 +110,80 @@ public class Controller {
         } else if (user instanceof ClientUser) {
             ClientUser client = (ClientUser) user;
             client.initialize("localhost", 6667);
-            client.sendMessage(createString(reformatSentAttack(user.performAttack())));
+            Attack initAttack = user.performAttack();
+            String initMessage = createMessage("i", reformatSentAttack(initAttack));
+            client.sendMessageToServer(initMessage);
             runClientGameLoop(client);
         }
     }
 
     private void runServerGameLoop(ServerUser server) {
         while (runGame) {
-            if (user.checkLost()) {
-                System.out.println("ServerPlayer lost!");
-                server.sendMessageToClient("game over");
-                runGame = false;
-            } else {
-                try {
-                    String message = server.getLastMessageReceived();
-                    if (message != null) {
-                        handleIncomingMessage(server, message);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                String message = server.getLastMessageReceived();
+                if (message != null) {
+                    handleIncomingMessage(server, message);
+                    Thread.sleep(2000);
                 }
+                if (user.checkLost()) {
+                    System.out.println("Server lost!");
+                    server.sendMessageToClient("game over");
+                    runGame = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+        System.out.println("Server game loop ended.");
     }
 
     private void runClientGameLoop(ClientUser client) {
         while (runGame) {
-            if (user.checkLost()) {
-                System.out.println("ClientPlayer lost!");
-                client.sendMessage("game over");
-                runGame = false;
-            } else {
-                try {
-                    String message = client.getLastMessageReceived();
-                    if (message != null) {
-                        handleIncomingMessage(client, message);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                String message = client.getLastMessageReceived();
+                if (message != null) {
+                    handleIncomingMessage(client, message);
+                    Thread.sleep(2000);
                 }
+                if (user.checkLost()) {
+                    System.out.println("Client lost!");
+                    client.sendMessageToServer("game over");
+                    runGame = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+        System.out.println("Client game loop ended.");
     }
 
     private void handleIncomingMessage(User user, String message) {
         if (message.contains("shot")) {
-            Attack takenAttack = reformatTakenAttack(message.split(" ")[2]);
+
+            String[] parts = message.split(" ");
+            String type = parts[0]; // denna kanske inte behövs
+
+            Attack takenAttack = reformatTakenAttack(parts[2]);
             user.takeAttack(takenAttack.getX(), takenAttack.getY());
 
-            String attackResult = user.getMap().checkLost() ? "hit" : "miss";
-            view.updateMap(takenAttack.getX(), takenAttack.getY(), attackResult);
-            view.update();
+            boolean wasHit = user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isDestroyed() &&
+                    user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isShip();
+            String result = wasHit ? "h" : "m";
+
+            if (wasHit && user.getMap().checkIfShipSunk(takenAttack.getX(), takenAttack.getY())) {
+                result = "s";
+            }
 
             Attack nextAttack = user.performAttack();
-            String nextAttackMessage = createString(reformatSentAttack(nextAttack));
+            String nextAttackMessage = createMessage(result, reformatSentAttack(nextAttack));
 
             if (user instanceof ServerUser) {
                 ((ServerUser) user).sendMessageToClient(nextAttackMessage);
             } else if (user instanceof ClientUser) {
-                ((ClientUser) user).sendMessage(nextAttackMessage);
+                ((ClientUser) user).sendMessageToServer(nextAttackMessage);
             }
-        } else if (message.equals("game over")) {
-            System.out.println("Game Over, stopping game.");
+        } else if (message.contains("game over")) {
+            System.out.println("Game won!");
             runGame = false;
         }
     }

@@ -13,8 +13,6 @@ public class ClientUser extends User
     private BufferedReader input;
     private PrintWriter output;
 
-    private String lastMessageReceived;
-
     public ClientUser(UserMap map)
     {
         super(map);
@@ -28,7 +26,7 @@ public class ClientUser extends User
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
-            System.out.println("Anslutit till " + host + ":" + port);
+            System.out.println("Client connected to " + host + ":" + port);
 
            Thread thread = new Thread(()->{
 
@@ -51,11 +49,12 @@ public class ClientUser extends User
         }
     }
 
-    public void sendMessage(String message)
+    public void sendMessageToServer(String message)
     {
         try
         {
             output.println(message);
+            System.out.println("Message sent to Server: " + message);
         }
         catch (Exception e)
         {
@@ -85,7 +84,7 @@ public class ClientUser extends User
 
         try
         {
-            sendMessage("game over");
+            sendMessageToServer("game over");
             socket.close();
         }
         catch (IOException e)

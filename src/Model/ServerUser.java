@@ -13,8 +13,6 @@ public class ServerUser extends User
     private BufferedReader input;
     private PrintWriter output;
 
-    private String lastMessageReceived;
-
     public ServerUser(UserMap map)
     {
         super(map);
@@ -25,8 +23,8 @@ public class ServerUser extends User
         try
         {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Server startat i port: " + PORT);
-            System.out.println("Väntar på att klienten ansluter...");
+            System.out.println("Server starting on port: " + PORT);
+            System.out.println("Waiting for Client to connect...");
         }
         catch (IOException e)
         {
@@ -38,7 +36,7 @@ public class ServerUser extends User
             try
             {
                 Socket client = serverSocket.accept();
-                System.out.println("Klienten har anslutit");
+                System.out.println("Client has connected");
 
                 input = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 output = new PrintWriter(new OutputStreamWriter(client.getOutputStream()), true);
@@ -61,7 +59,7 @@ public class ServerUser extends User
         try
         {
             output.println(message);
-            System.out.println("Message sent to client: " + message);
+            System.out.println("Message sent to CLIENT: " + message);
         }
         catch (Exception e)
         {
@@ -79,7 +77,7 @@ public class ServerUser extends User
                 try
                 {
                     messageFromClient = input.readLine();
-                    System.out.println("Message from Client: " + messageFromClient);
+                    System.out.println("Message from CLIENT: " + messageFromClient);
                     lastMessageReceived = messageFromClient;
                 }
                 catch (IOException e)

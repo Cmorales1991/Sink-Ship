@@ -14,7 +14,7 @@ public class UserMap {
         // Create empty map, 10x10
         for(int i = 0; i < 10; i++) {
             for(int j = 0; j < 10; j++) {
-                map.add(new Coordinate(i, j, false));
+                map.add(new Coordinate(i, j, false, false));
             }
         }
         placeShips();
@@ -66,7 +66,7 @@ public class UserMap {
         }
     }
 
-    private Coordinate getCoordinate(int x, int y) {
+    public Coordinate getCoordinate(int x, int y) {
         return map.stream()
                 .filter(coord -> coord.getX() == x && coord.getY() == y)
                 .findFirst()
@@ -75,7 +75,7 @@ public class UserMap {
 
     public void takeAttack(int x, int y) {
         Coordinate c = getCoordinate(x, y);
-        if (c.isShip()) {
+        if (c.isShip() && !c.isDestroyed()) {
             c.destroyShip();
             System.out.println("Part of ship was destroyed on coordinate (" + c.getX() + ", " + c.getY() + ")");
         }
@@ -88,11 +88,23 @@ public class UserMap {
         boolean noShips = true;
 
         for (Coordinate coord : map) {
-            if (coord.isShip()) {
-                noShips = false; // IF ANY SHIPS ARE LEFT, RETURN FALSE (NOT LOST)
+            if (coord.isShip() && !coord.isDestroyed()) {
+                noShips = false; // If any ships are left and not destroyed, return false (still not lost)
+                break;
             }
         }
         return noShips;
+    }
+
+    public boolean checkIfShipSunk(int x, int y) {
+        for (Coordinate coord : map) {
+            if (coord.isShip() && (coord.getX() == x && coord.getY() == y)) {
+                return map.stream()
+                        .filter(Coordinate::isShip)
+                        .noneMatch(c -> c.getX() == x && c.getY() == y);
+            }
+        }
+        return false;
     }
 
     // METHOD FOR TESTING

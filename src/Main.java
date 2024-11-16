@@ -6,9 +6,7 @@ import View.UserChoice;
 import View.ViewGame;
 import View.ViewMenu;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
-import Model.Coordinate;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -17,23 +15,6 @@ public class Main extends Application
     AtomicBoolean shutdown = new AtomicBoolean(false);
 
     public static void main(String[] args) {
-
-        /* Randomly generated UserMap to pass as argument to either ClientUser or ServerUser,
-        depending on the user's choice. */
-
-        /* ServerUser server = new ServerUser(map);
-        ClientUser client = new ClientUser(map);
-
-        server.initialize();
-        client.initialize("localhost", 6667); */
-
-        /* om användaren trycker på Server så skapas en ServerUser, annars skapas en ClientUser, och
-        de skickas till controllern såhär:
-        (användaren trycker på clientuser)
-
-        ClientUser user = new ClientUser(map);
-        Controller controller = new Controller(user, view);
-         */
 
         launch(args);
     }
