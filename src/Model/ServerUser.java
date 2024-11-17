@@ -59,7 +59,7 @@ public class ServerUser extends User
         try
         {
             output.println(message);
-            System.out.println("Message sent to CLIENT: " + message);
+            System.out.println("Message sent to Client: " + message);
         }
         catch (Exception e)
         {
@@ -77,7 +77,7 @@ public class ServerUser extends User
                 try
                 {
                     messageFromClient = input.readLine();
-                    System.out.println("Message from CLIENT: " + messageFromClient);
+                    System.out.println("Message from Client: " + messageFromClient);
                     lastMessageReceived = messageFromClient;
                 }
                 catch (IOException e)

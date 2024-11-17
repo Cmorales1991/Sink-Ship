@@ -15,14 +15,12 @@ public class Controller {
         this.view = view;
 
         Platform.runLater(() -> {
-            System.out.println("Current thread: " + Thread.currentThread().getName());
             // Place ships in view
             for (int x = 0; x < 10; x++) {
                 for (int y = 0; y < 10; y++) {
                     Coordinate coord = user.getMap().getCoordinate(x, y);
                     if (coord != null && coord.isShip()) {
-                        System.out.println("Placing ship on: " + x + " ," + y);
-                        view.updateMap(x, y, "s", user instanceof ServerUser);
+                        view.placeShips(x, y, user instanceof ServerUser);
                     }
                 }
             }
@@ -135,7 +133,7 @@ public class Controller {
                 String message = server.getLastMessageReceived();
                 if (message != null) {
                     handleIncomingMessage(server, message);
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 }
                 if (user.checkLost()) {
                     System.out.println("Server lost!");
@@ -155,7 +153,7 @@ public class Controller {
                 String message = client.getLastMessageReceived();
                 if (message != null) {
                     handleIncomingMessage(client, message);
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 }
                 if (user.checkLost()) {
                     System.out.println("Client lost!");
@@ -167,18 +165,6 @@ public class Controller {
             }
         }
         System.out.println("Client game loop ended.");
-    }
-
-    // WIP
-    public void updateCoordinate(int x, int y, boolean isServer, boolean isHit) {
-        String status;
-        if (isHit) {
-            status = "h";
-        }
-        else {
-            status = "m";
-        }
-        view.updateMap(x, y, status, isServer);
     }
 
     private void handleIncomingMessage(User user, String message) {
@@ -198,8 +184,14 @@ public class Controller {
                 result = "s";
             }
 
-            // funkar ej härifrån heller
-            // view.updateMap(4,4, "s", true);
+            // Print attack visually
+            switch(result) {
+                case "h":
+                    view.updateMaps(takenAttack.getX(),takenAttack.getY(), "h", user instanceof ServerUser);
+                    break;
+                case "m":
+                    view.updateMaps(takenAttack.getX(),takenAttack.getY(), "m", user instanceof ServerUser);
+            }
 
             Attack nextAttack = user.performAttack();
             String nextAttackMessage = createMessage(result, reformatSentAttack(nextAttack));

@@ -48,8 +48,17 @@ public class ViewGame extends View
 
     }
 
-    public void updateMap(int x, int y, String status, boolean ifServerMap) {
-        System.out.println("Updating Map: x=" + x + ", y=" + y + ", status=" + status + ", isServer=" + ifServerMap);
+    public void placeShips(int x, int y, boolean ifServerInstance) {
+        Platform.runLater(() -> {
+            if (ifServerInstance) {
+                serverMap.updateMap(x, y, "s");
+            } else {
+                clientMap.updateMap(x, y, "s");
+            }
+        });
+    }
+
+    public void updateMaps(int x, int y, String status, boolean ifServerMap) {
         Platform.runLater(() -> {
             if (ifServerMap) {
                 serverMap.updateMap(x, y, status);

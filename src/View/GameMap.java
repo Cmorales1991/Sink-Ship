@@ -28,9 +28,6 @@ public class GameMap {
                 pane.getChildren().add(cells[x][y]);
             }
         }
-
-        // Fungerar
-        updateMap(3,4,"s");
     }
 
     private void drawGrid() {
@@ -92,10 +89,6 @@ public class GameMap {
                     cells[x][y].setFill(Color.LIGHTBLUE); // empty
                     break;
             }
-            // Force update
-            pane.getChildren().remove(cells[x][y]);
-            pane.getChildren().add(cells[x][y]);
-            pane.requestLayout();
         });
     }
 

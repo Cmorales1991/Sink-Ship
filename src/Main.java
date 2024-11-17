@@ -6,6 +6,9 @@ import View.UserChoice;
 import View.ViewGame;
 import View.ViewMenu;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Parent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,14 +41,27 @@ public class Main extends Application
                 if (userInput == UserChoice.SERVER) {
                     UserMap map = new UserMap();
                     ServerUser server = new ServerUser(map);
-                    Controller controller = new Controller(server, new ViewGame(500, 800, true));
+                    ViewGame viewGame = new ViewGame(500, 800, true);
+                    Controller controller = new Controller(server, viewGame);
+
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGame.getScene());
+                    });
+
                     controller.startGame();
+
                     break;
                 }
                 else if (userInput == UserChoice.CLIENT) {
                     UserMap map = new UserMap();
                     ClientUser client = new ClientUser(map);
-                    Controller controller = new Controller(client, new ViewGame(500, 800, false));
+                    ViewGame viewGame = new ViewGame(500, 800, false);
+                    Controller controller = new Controller(client, viewGame);
+
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGame.getScene());
+                    });
+
                     controller.startGame();
                     break;
                 }
