@@ -12,7 +12,6 @@ public class ClientUser extends User
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
-
     private String lastMessageReceived;
 
     public ClientUser(UserMap map)
@@ -51,14 +50,11 @@ public class ClientUser extends User
         }
     }
 
-    public void sendMessage(String message)
-    {
-        try
-        {
+    public void sendMessage(String message) {
+        try {
             output.println(message);
-        }
-        catch (Exception e)
-        {
+            System.out.println("Message sent to Server: " + message);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -97,5 +93,9 @@ public class ClientUser extends User
     public String getLastMessageReceived()
     {
         return lastMessageReceived;
+    }
+
+    public void setLastMessageReceived(String message) {
+        this.lastMessageReceived = message;
     }
 }

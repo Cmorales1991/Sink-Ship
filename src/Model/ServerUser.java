@@ -12,7 +12,6 @@ public class ServerUser extends User
     private ServerSocket serverSocket;
     private BufferedReader input;
     private PrintWriter output;
-
     private String lastMessageReceived;
 
     public ServerUser(UserMap map)
@@ -118,5 +117,9 @@ public class ServerUser extends User
     public String getLastMessageReceived()
     {
         return lastMessageReceived;
+    }
+
+     public void setLastMessageReceived(String message) {
+        this.lastMessageReceived = message;
     }
 }

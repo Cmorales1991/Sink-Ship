@@ -7,6 +7,7 @@ import java.util.Random;
 public class UserMap {
 
     private List<Coordinate> map = new ArrayList<>();
+    private List<Ship> ships = new ArrayList<>(); // Lista över alla skepp
     private final int MAP_SIZE = 10;
     private final int[] SHIPS = {5, 4, 4, 3, 3, 3, 2, 2, 2, 2};
 
@@ -22,17 +23,17 @@ public class UserMap {
 
     private void placeShips() {
         Random rand = new Random();
-        // LOOP THROUGH ALL SHIPS
         for (int size : SHIPS) {
             boolean placed = false;
-            // LOOPS UNTIL ALL SHIPS ARE PLACED
             while (!placed) {
                 boolean horizontal = rand.nextBoolean();
                 int startX = rand.nextInt(MAP_SIZE);
                 int startY = rand.nextInt(MAP_SIZE);
 
                 if (canPlaceShip(startX, startY, size, horizontal)) {
-                    placeShip(startX, startY, size, horizontal);
+                    Ship newShip = new Ship("Ship-" + size, size, horizontal);
+                    placeShip(startX, startY, size, horizontal, newShip);
+                    ships.add(newShip);
                     placed = true;
                 }
             }
@@ -58,11 +59,14 @@ public class UserMap {
         return true; // IF PLACEMENT IS ALLOWED
     }
 
-    private void placeShip(int startX, int startY, int size, boolean horizontal) {
+    private void placeShip(int startX, int startY, int size, boolean horizontal, Ship ship) {
         for (int i = 0; i < size; i++) {
             int x = horizontal ? startX + i : startX;
             int y = horizontal ? startY : startY + i;
-            getCoordinate(x, y).setShip(true);
+            Coordinate coord = getCoordinate(x, y);
+            coord.setShip(true);
+            coord.setShipReference(ship);
+            ship.getPositions().add(new int[]{x, y});
         }
     }
 
@@ -77,22 +81,39 @@ public class UserMap {
         Coordinate c = getCoordinate(x, y);
         if (c.isShip()) {
             c.destroyShip();
-            System.out.println("Part of ship was destroyed on coordinate (" + c.getX() + ", " + c.getY() + ")");
-        }
-        else {
-            System.out.println("No ship found on coordinate (" + c.getX() + ", " + c.getY() + ")");
         }
     }
 
-    public boolean checkLost() {
-        boolean noShips = true;
+    public boolean wasHit(int x, int y) {
+        Coordinate c = getCoordinate(x, y);
+        return c != null && c.isShip();
+    }
 
-        for (Coordinate coord : map) {
-            if (coord.isShip()) {
-                noShips = false; // IF ANY SHIPS ARE LEFT, RETURN FALSE (NOT LOST)
+    public boolean isShipSunk(int x, int y) {
+        Coordinate coord = getCoordinate(x, y);
+        if (coord == null || coord.getShipReference() == null) {
+            return false; // Om ingen skeppsreferens hittas, är det inte en del av ett skepp
+        }
+
+        Ship ship = coord.getShipReference();
+
+        // Kontrollera om alla delar av skeppet är förstörda
+        for (int[] position : ship.getPositions()) {
+            Coordinate part = getCoordinate(position[0], position[1]);
+            if (part != null && part.isShip()) {
+                return false; // Om någon del av skeppet fortfarande är oskadad
             }
         }
-        return noShips;
+        return true; // Alla delar av skeppet är förstörda
+    }
+
+    public boolean checkLost() {
+        for (Coordinate coord : map) {
+            if (coord.isShip()) {
+                return false; // Det finns fortfarande skepp på kartan
+            }
+        }
+        return true; // Alla skepp är förstörda
     }
 
     // METHOD FOR TESTING

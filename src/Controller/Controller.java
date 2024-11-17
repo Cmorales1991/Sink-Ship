@@ -17,89 +17,20 @@ public class Controller {
         this.view = view;
     }
 
-    private String reformatSentAttack(Attack attack) {
-        String formattedAttack = String.valueOf(attack.getX());
-
-        switch (attack.getY()) {
-            case 0:
-                formattedAttack += "a";
-                break;
-            case 1:
-                formattedAttack += "b";
-                break;
-            case 2:
-                formattedAttack += "c";
-                break;
-            case 3:
-                formattedAttack += "d";
-                break;
-            case 4:
-                formattedAttack += "e";
-                break;
-            case 5:
-                formattedAttack += "f";
-                break;
-            case 6:
-                formattedAttack += "g";
-                break;
-            case 7:
-                formattedAttack += "h";
-                break;
-            case 8:
-                formattedAttack += "i";
-                break;
-            case 9:
-                formattedAttack += "j";
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid Y coordinate: " + attack.getY());
-        }
-        return formattedAttack;
+    private String createMessage(String code, Attack attack) {
+        String formattedAttack = attack.getX() + "" + (char) ('a' + attack.getY());
+        return code + " shot " + formattedAttack;
     }
 
-    private Attack reformatTakenAttack(String attack) {
-        int x = Character.getNumericValue(attack.charAt(0));
-        int y;
-
-        switch (attack.charAt(1)) {
-            case 'a':
-                y = 0;
-                break;
-            case 'b':
-                y = 1;
-                break;
-            case 'c':
-                y = 2;
-                break;
-            case 'd':
-                y = 3;
-                break;
-            case 'e':
-                y = 4;
-                break;
-            case 'f':
-                y = 5;
-                break;
-            case 'g':
-                y = 6;
-                break;
-            case 'h':
-                y = 7;
-                break;
-            case 'i':
-                y = 8;
-                break;
-            case 'j':
-                y = 9;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid Y coordinate: " + attack.charAt(1));
+    private Attack parseMessage(String message) {
+        String[] parts = message.split(" ");
+        if (parts.length < 3) {
+            throw new IllegalArgumentException("Invalid message format: " + message);
         }
+
+        int x = Character.getNumericValue(parts[2].charAt(0));
+        int y = parts[2].charAt(1) - 'a';
         return new Attack(x, y);
-    }
-
-    private String createString(String coordinate) {
-        return "m shot " + coordinate;
     }
 
     public void startGame() {
@@ -110,69 +41,97 @@ public class Controller {
         } else if (user instanceof ClientUser) {
             ClientUser client = (ClientUser) user;
             client.initialize("localhost", 6667);
-            client.sendMessage(createString(reformatSentAttack(user.performAttack())));
+            client.sendMessage(createMessage("i", user.performAttack()));
             runClientGameLoop(client);
+        }
+    }
+
+    private void handleIncomingMessage(User user, String message) {
+        if (message.equals("game over")) {
+            runGame = false; // Avsluta spelet
+            return;
+        }
+
+        String[] parts = message.split(" ");
+        Attack takenAttack = parseMessage(message);
+
+        // Uppdatera kartan med attackresultat
+        boolean hit = user.getMap().wasHit(takenAttack.getX(), takenAttack.getY());
+        boolean shipSunk = user.getMap().isShipSunk(takenAttack.getX(), takenAttack.getY());
+
+        user.takeAttack(takenAttack.getX(), takenAttack.getY());
+
+        // Kontrollera om spelet är slut
+        boolean lost = user.checkLost();
+
+        String responseCode;
+        if (lost) {
+            responseCode = "game over";
+            runGame = false; // Stoppa spelet
+        } else if (shipSunk) {
+            responseCode = "s";
+        } else if (hit) {
+            responseCode = "h";
+        } else {
+            responseCode = "m";
+        }
+
+        if (!responseCode.equals("game over")) {
+            // Utför nästa attack om spelet inte är slut
+            Attack nextAttack = user.performAttack();
+            String responseMessage = createMessage(responseCode, nextAttack);
+
+            if (user instanceof ServerUser) {
+                ((ServerUser) user).sendMessageToClient(responseMessage);
+            } else if (user instanceof ClientUser) {
+                ((ClientUser) user).sendMessage(responseMessage);
+            }
+
+            view.updateMap(takenAttack.getX(), takenAttack.getY(), hit ? "hit" : "miss");
+            view.update();
+        } else {
+            // Skicka "game over"
+            if (user instanceof ServerUser) {
+                ((ServerUser) user).sendMessageToClient("game over");
+            } else if (user instanceof ClientUser) {
+                ((ClientUser) user).sendMessage("game over");
+            }
         }
     }
 
     private void runServerGameLoop(ServerUser server) {
         while (runGame) {
-            if (user.checkLost()) {
-                System.out.println("ServerPlayer lost!");
-                server.sendMessageToClient("game over");
-                runGame = false;
-            } else {
-                try {
-                    String message = server.getLastMessageReceived();
-                    if (message != null) {
-                        handleIncomingMessage(server, message);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            String message = server.getLastMessageReceived();
+            if (message != null) {
+                handleIncomingMessage(server, message);
+                server.setLastMessageReceived(null);
+            }
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
 
     private void runClientGameLoop(ClientUser client) {
         while (runGame) {
-            if (user.checkLost()) {
-                System.out.println("ClientPlayer lost!");
-                client.sendMessage("game over");
-                runGame = false;
-            } else {
-                try {
-                    String message = client.getLastMessageReceived();
-                    if (message != null) {
-                        handleIncomingMessage(client, message);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            String message = client.getLastMessageReceived();
+            if (message != null) {
+                handleIncomingMessage(client, message);
+                client.setLastMessageReceived(null);
             }
-        }
-    }
 
-    private void handleIncomingMessage(User user, String message) {
-        if (message.contains("shot")) {
-            Attack takenAttack = reformatTakenAttack(message.split(" ")[2]);
-            user.takeAttack(takenAttack.getX(), takenAttack.getY());
-
-            String attackResult = user.getMap().checkLost() ? "hit" : "miss";
-            view.updateMap(takenAttack.getX(), takenAttack.getY(), attackResult);
-            view.update();
-
-            Attack nextAttack = user.performAttack();
-            String nextAttackMessage = createString(reformatSentAttack(nextAttack));
-
-            if (user instanceof ServerUser) {
-                ((ServerUser) user).sendMessageToClient(nextAttackMessage);
-            } else if (user instanceof ClientUser) {
-                ((ClientUser) user).sendMessage(nextAttackMessage);
+            if (!runGame) {
+                break;
             }
-        } else if (message.equals("game over")) {
-            System.out.println("Game Over, stopping game.");
-            runGame = false;
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
