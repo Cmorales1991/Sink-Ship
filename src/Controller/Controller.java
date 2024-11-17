@@ -4,6 +4,8 @@ import Model.*;
 import View.ViewGame;
 import javafx.application.Platform;
 
+import java.util.Objects;
+
 public class Controller {
 
     private User user;
@@ -167,25 +169,22 @@ public class Controller {
         System.out.println("Client game loop ended.");
     }
 
-    private void handleIncomingMessage(User user, String message) {
+    private void handleIncomingMessage(User user, String message)  {
         if (message.contains("shot")) {
 
             String[] parts = message.split(" ");
-            String type = parts[0]; // denna kanske inte behövs
+            String previousAttackResult = parts[0];
+            String previousAttackCoordinate; // Coord of previous attack
 
             Attack takenAttack = reformatTakenAttack(parts[2]);
             user.takeAttack(takenAttack.getX(), takenAttack.getY());
 
             boolean wasHit = user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isDestroyed() &&
                     user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isShip();
-            String result = wasHit ? "h" : "m";
+            String resultTakenAttack = wasHit ? "h" : "m";
 
-            if (wasHit && user.getMap().checkIfShipSunk(takenAttack.getX(), takenAttack.getY())) {
-                result = "s";
-            }
-
-            // Print attack visually
-            switch(result) {
+            // Print taken attack visually
+            switch(resultTakenAttack) {
                 case "h":
                     view.updateMaps(takenAttack.getX(),takenAttack.getY(), "h", user instanceof ServerUser);
                     break;
@@ -193,8 +192,26 @@ public class Controller {
                     view.updateMaps(takenAttack.getX(),takenAttack.getY(), "m", user instanceof ServerUser);
             }
 
+            // Print previous attack on enemy map
+            if (user.getLastMessageSent() != null) {
+                previousAttackCoordinate = user.getLastMessageSent().split(" ")[2];
+
+                // If last message resulted in hit/miss, print to enemy map
+                if (previousAttackResult.equals("m")) {
+                    view.updateMaps(
+                            reformatTakenAttack(previousAttackCoordinate).getX(),
+                            reformatTakenAttack(previousAttackCoordinate).getY(),
+                            "m", !(user instanceof ServerUser));
+                } else if (previousAttackResult.equals("h")) {
+                    view.updateMaps(
+                            reformatTakenAttack(previousAttackCoordinate).getX(),
+                            reformatTakenAttack(previousAttackCoordinate).getY(),
+                            "h", !(user instanceof ServerUser));
+                }
+            }
+
             Attack nextAttack = user.performAttack();
-            String nextAttackMessage = createMessage(result, reformatSentAttack(nextAttack));
+            String nextAttackMessage = createMessage(resultTakenAttack, reformatSentAttack(nextAttack));
 
             if (user instanceof ServerUser) {
                 ((ServerUser) user).sendMessageToClient(nextAttackMessage);

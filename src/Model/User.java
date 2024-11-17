@@ -9,6 +9,7 @@ public abstract class User {
     private UserMap map;
     private List<Attack> attacks = new ArrayList<>();
     protected String lastMessageReceived;
+    protected String lastMessageSent;
 
     public User(UserMap map) {
         this.map = map;
@@ -48,7 +49,11 @@ public abstract class User {
         return map;
     }
 
-    public void setLastMessageReceived(String lastMessageReceived) {
-        this.lastMessageReceived = lastMessageReceived;
+    public String getLastMessageReceived() {
+        return lastMessageReceived;
+    }
+
+    public String getLastMessageSent() {
+        return lastMessageSent;
     }
 }

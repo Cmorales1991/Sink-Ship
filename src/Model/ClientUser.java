@@ -6,95 +6,90 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientUser extends User
-{
+public class ClientUser extends User {
 
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
+    private final Object lock = new Object();
 
     public ClientUser(UserMap map)
     {
         super(map);
     }
 
-    public void initialize(String host, int port)
-    {
-        try
-        {
+    public void initialize(String host, int port) {
+        try {
             socket = new Socket(host, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
 
             System.out.println("Client connected to " + host + ":" + port);
 
-           Thread thread = new Thread(()->{
-
-               try
-               {
+            Thread thread = new Thread(()->{
+               try {
                    handleServer();
                }
-               catch (InterruptedException e)
-               {
+               catch (InterruptedException e) {
                    throw new RuntimeException(e);
                }
            });
-
            thread.setName("Client thread");
            thread.start();
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void sendMessageToServer(String message)
-    {
-        try
-        {
+    public void sendMessageToServer(String message) {
+        try {
+            this.lastMessageSent = message;
             output.println(message);
             System.out.println("Message sent to Server: " + message);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private void handleServer() throws InterruptedException {
         String messageFromServer = null;
-
-        do
-        {
-            try
-            {
+        do {
+            try {
                 messageFromServer = input.readLine();
                 System.out.println("Message from Server: " + messageFromServer);
                 lastMessageReceived = messageFromServer;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        while(!(messageFromServer.equals("game over")));
 
-            Thread.sleep(2000);
-
-        }while(!messageFromServer.equals("game over"));
-
-        try
-        {
+        try {
             sendMessageToServer("game over");
             socket.close();
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String getLastMessageReceived()
-    {
-        return lastMessageReceived;
+    public String getLastMessageReceived() {
+        synchronized (lock) {
+            return lastMessageReceived;
+        }
+    }
+
+    public String getLastMessageSent() {
+        synchronized (lock) {
+            return lastMessageSent;
+        }
     }
 }

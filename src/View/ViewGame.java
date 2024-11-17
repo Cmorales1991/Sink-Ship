@@ -1,7 +1,6 @@
 package View;
 
 import javafx.application.Platform;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -51,9 +50,9 @@ public class ViewGame extends View
     public void placeShips(int x, int y, boolean ifServerInstance) {
         Platform.runLater(() -> {
             if (ifServerInstance) {
-                serverMap.updateMap(x, y, "s");
+                serverMap.updateMap(x, y, "p");
             } else {
-                clientMap.updateMap(x, y, "s");
+                clientMap.updateMap(x, y, "p");
             }
         });
     }

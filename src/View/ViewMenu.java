@@ -38,13 +38,11 @@ public class ViewMenu extends View {
             System.out.println("Starting game as Server");
             if (viewGameServer == null) {
                 userChoice = UserChoice.SERVER;
-                new Thread(() -> {
                     viewGameServer = new ViewGame(height, width, true);
                     Platform.runLater(() -> {
                         primaryStage.setScene(viewGameServer.getScene());
                         setTitle("Battleship - Server");  // ändrar titeln när server start väljs
                     });
-                }).start();
             } else {
                 userChoice = UserChoice.SERVER;
                 primaryStage.setScene(viewGameServer.getScene());
@@ -63,13 +61,11 @@ public class ViewMenu extends View {
             System.out.println("Starting game as Client");
             if (viewGameClient == null) {
                 userChoice = UserChoice.CLIENT;
-                new Thread(() -> {
                     viewGameClient = new ViewGame(height, width, true);
                     Platform.runLater(() -> {
                         primaryStage.setScene(viewGameServer.getScene());
                         setTitle("Battleship - Client");  // ändrar titeln när klient start väljs
                     });
-                }).start();
             } else {
                 userChoice = UserChoice.CLIENT;
                 primaryStage.setScene(viewGameClient.getScene());

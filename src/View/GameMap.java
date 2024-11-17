@@ -5,7 +5,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.w3c.dom.css.Rect;
 
 public class GameMap {
 
@@ -71,13 +70,9 @@ public class GameMap {
 
     public void updateMap(int x, int y, String status) {
         Platform.runLater(() -> {
-            if (cells[x][y] == null) {
-                System.out.println("No cell found at: (" + x + ", " + y + ")");
-                return;
-            }
             switch (status.toLowerCase()) {
-                case "s":
-                    cells[x][y].setFill(Color.GREEN); // ship
+                case "p":
+                    cells[x][y].setFill(Color.GREEN); // place ship
                     break;
                 case "h":
                     cells[x][y].setFill(Color.RED); // hit
@@ -91,7 +86,6 @@ public class GameMap {
             }
         });
     }
-
 
     public AnchorPane getGameMapPane() {
         return pane;

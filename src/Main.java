@@ -7,8 +7,6 @@ import View.ViewGame;
 import View.ViewMenu;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Parent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,7 +16,6 @@ public class Main extends Application
     AtomicBoolean shutdown = new AtomicBoolean(false);
 
     public static void main(String[] args) {
-
         launch(args);
     }
 
@@ -49,7 +46,6 @@ public class Main extends Application
                     });
 
                     controller.startGame();
-
                     break;
                 }
                 else if (userInput == UserChoice.CLIENT) {
