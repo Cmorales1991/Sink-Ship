@@ -7,84 +7,84 @@ import View.ViewGame;
 import View.ViewMenu;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Main extends Application {
+public class Main extends Application
+{
+    AtomicBoolean shutdown = new AtomicBoolean(false);
 
-    private AtomicBoolean shutdown = new AtomicBoolean(false);
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) {
-        // Skapa huvudmenyn och sätt scenen till den
         ViewMenu viewMenu = new ViewMenu(500, 800, primaryStage);
 
-        Platform.runLater(() -> {
-            primaryStage.setScene(viewMenu.getScene());
-            primaryStage.show();
-        });
+        primaryStage.setScene(viewMenu.getScene());
         primaryStage.setTitle("Sänka Skepp");
 
-
-        // Lyssna på när användaren stänger fönstret
         primaryStage.setOnCloseRequest(event -> {
             shutdown.set(true);
         });
 
-        // Skapa och starta en tråd som hanterar menyn och spelet
         Thread thread = new Thread(() -> {
-            System.out.println("Spelet startas i tråden.");
             UserChoice userInput;
 
             do {
-                System.out.println("Inne i tråden, börja kolla användarens val...");
-                // Hämta användarens val från menyn
                 userInput = viewMenu.getUserChoice();
-                System.out.println("Vald användartyp: " + userInput);
-                // Skapa spelplan och användare beroende på val
                 if (userInput == UserChoice.SERVER) {
-                    System.out.println("Server valdes.");
                     UserMap map = new UserMap();
                     ServerUser server = new ServerUser(map);
                     ViewGame viewGame = new ViewGame(500, 800, true);
                     Controller controller = new Controller(server, viewGame);
-                    controller.startGame();  // Starta spelet för servern
+
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGame.getScene());
+                    });
+
+                    controller.startGame();
                     break;
-                } else if (userInput == UserChoice.CLIENT) {
-                    System.out.println("Klient valdes.");
+                }
+                else if (userInput == UserChoice.CLIENT) {
                     UserMap map = new UserMap();
                     ClientUser client = new ClientUser(map);
                     ViewGame viewGame = new ViewGame(500, 800, false);
                     Controller controller = new Controller(client, viewGame);
-                    controller.startGame();  // Starta spelet för klienten
+
+                    Platform.runLater(() -> {
+                        primaryStage.setScene(viewGame.getScene());
+                    });
+
+                    controller.startGame();
                     break;
                 }
-
-
-                // Vänta innan vi kollar om användaren har gjort ett val
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
-
-            } while (!shutdown.get());  // Fortsätt tills shutdown är satt till true
-            System.out.println("Slut på trådlogik.");
+                catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            while (!shutdown.get());
         });
 
         thread.setName("Menu thread");
-        thread.setDaemon(true);  // Tråden stängs automatiskt när applikationen stänger
+
+        //Genom att sätta en tråds Daemon-variabel till true så kommer tråden automatiskt stängas av när programmet stängs av.
+
+        thread.setDaemon(true);
         thread.start();
+
+        primaryStage.show();
     }
 
     @Override
-    public void stop() {
-        shutdown.set(true);  // Stänger ner tråden när applikationen stängs
+    public void stop()
+    {
+        shutdown.set(true);
     }
 
-    public static void main(String[] args) {
-        launch(args);  // Starta JavaFX-applikationen
-    }
 }

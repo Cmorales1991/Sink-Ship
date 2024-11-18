@@ -5,13 +5,13 @@ public class Coordinate {
     private int x;
     private int y;
     private boolean ship;
-    private boolean destroyed; // Nytt fält för att spåra om skeppet är förstört
+    private boolean destroyed;
 
-    public Coordinate(int x, int y, boolean ship) {
+    public Coordinate(int x, int y, boolean ship, boolean destroyed) {
         this.x = x;
         this.y = y;
         this.ship = ship;
-        this.destroyed = false; // Initiera som ej förstörd
+        this.destroyed = destroyed;
     }
 
     public int getX() {
@@ -31,12 +31,10 @@ public class Coordinate {
     }
 
     public void destroyShip() {
-        if (ship) {
-            this.destroyed = true; // Markera koordinaten som förstörd om det är ett skepp
-        }
+        this.destroyed = true;
     }
 
     public boolean isDestroyed() {
-        return destroyed; // Returnerar om koordinaten är förstörd
+        return destroyed;
     }
 }

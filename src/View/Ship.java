@@ -1,6 +1,4 @@
-package Model;
-
-import javafx.scene.image.Image;
+package View;
 
 import java.util.ArrayList;
 import java.util.List;
