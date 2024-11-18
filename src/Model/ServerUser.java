@@ -61,7 +61,7 @@ public class ServerUser extends User {
 
     private void handleClient(Socket socket) throws IOException {
         new Thread(()-> {
-           String messageFromClient = null;
+            String messageFromClient = null;
             do {
                 try {
                     messageFromClient = input.readLine();
@@ -103,5 +103,3 @@ public class ServerUser extends User {
         }
     }
 }
-
-
