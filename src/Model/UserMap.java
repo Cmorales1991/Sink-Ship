@@ -93,14 +93,69 @@ public class UserMap {
     }
 
     public boolean checkIfShipSunk(int x, int y) {
-        for (Coordinate coord : map) {
-            if (coord.isShip() && (coord.getX() == x && coord.getY() == y)) {
-                return map.stream()
-                        .filter(Coordinate::isShip)
-                        .noneMatch(c -> c.getX() == x && c.getY() == y);
+        Coordinate startCoord = getCoordinate(x, y);
+        if (!startCoord.isShip()) {
+            return false; // Om det inte är en skeppscell, kan skeppet inte vara sänkt
+        }
+
+        // Hämta alla koordinater som tillhör samma skepp
+        List<Coordinate> shipCoordinates = getShipCoordinates(x, y);
+
+        // Kontrollera om alla dessa koordinater är förstörda
+        return shipCoordinates.stream().allMatch(Coordinate::isDestroyed);
+    }
+
+    public List<Coordinate> getSunkShipCoordinates (int x, int y) {
+        Coordinate targetCoord = getCoordinate(x,y);
+        if (!targetCoord.isShip()) {
+            return new ArrayList<>();
+        }
+        return getShipCoordinates(x,y);
+    }
+    private List<Coordinate> getShipCoordinates(int x, int y) {
+        List<Coordinate> shipCoordinates = new ArrayList<>();
+        Coordinate startCoord = getCoordinate(x, y);
+
+        // Kontrollera både horisontellt och vertikalt för att hitta hela skeppet
+        int startX = startCoord.getX();
+        int startY = startCoord.getY();
+
+        // Lägg till alla horisontella delar av skeppet
+        for (int i = startX; i < MAP_SIZE; i++) {
+            Coordinate coord = getCoordinate(i, startY);
+            if (coord != null && coord.isShip()) {
+                shipCoordinates.add(coord);
+            } else {
+                break;
             }
         }
-        return false;
+        for (int i = startX - 1; i >= 0; i--) {
+            Coordinate coord = getCoordinate(i, startY);
+            if (coord != null && coord.isShip()) {
+                shipCoordinates.add(coord);
+            } else {
+                break;
+            }
+        }
+
+        // Lägg till alla vertikala delar av skeppet
+        for (int j = startY; j < MAP_SIZE; j++) {
+            Coordinate coord = getCoordinate(startX, j);
+            if (coord != null && coord.isShip()) {
+                shipCoordinates.add(coord);
+            } else {
+                break;
+            }
+        }
+        for (int j = startY - 1; j >= 0; j--) {
+            Coordinate coord = getCoordinate(startX, j);
+            if (coord != null && coord.isShip()) {
+                shipCoordinates.add(coord);
+            } else {
+                break;
+            }
+        }
+        return shipCoordinates;
     }
 
     // METHOD FOR TESTING

@@ -4,6 +4,7 @@ import Model.*;
 import View.ViewGame;
 import javafx.application.Platform;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Controller {
@@ -183,68 +184,70 @@ public class Controller {
 
     private void handleIncomingMessage(User user, String message) {
         if (message.contains("shot")) {
-
             String[] parts = message.split(" ");
             String previousAttackResult = parts[0];
             String previousAttackCoordinate; // Coord of previous attack
 
+            // Skapa ett Attack-objekt baserat på inkommande koordinater
             Attack takenAttack = reformatTakenAttack(parts[2]);
             int x = takenAttack.getX();
             int y = takenAttack.getY();
+
+            // Utför attacken på användarens karta och kontrollera resultatet
             user.takeAttack(x, y);
 
+            // Hämtar aktuell koordinat för att kontrollera om det är ett skepp och om det har förstörts
+            Coordinate targetCoordinate = user.getMap().getCoordinate(x, y);
+            boolean wasHit = targetCoordinate.isShip() && targetCoordinate.isDestroyed();
 
-            boolean wasHit = user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isDestroyed() &&
-                    user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isShip();
-            String resultTakenAttack = wasHit ? "h" : "m";
-
-            boolean isShipSunk = wasHit && user.getMap().checkIfShipSunk(x, y);
-
-            if (isShipSunk) {
-                view.updateMaps(x, y, "s", user instanceof ServerUser);
-                System.out.println("A ship has been sunk!");
-            } else {
-                // Print taken attack visually
-                switch (resultTakenAttack) {
-                    case "h":
-                        view.updateMaps(takenAttack.getX(), takenAttack.getY(), "h", user instanceof ServerUser);
-                        break;
-                    case "m":
-                        view.updateMaps(takenAttack.getX(), takenAttack.getY(), "m", user instanceof ServerUser);
-                }
-            }
-
-                // Print previous attack on enemy map
-                if (user.getLastMessageSent() != null) {
-                    previousAttackCoordinate = user.getLastMessageSent().split(" ")[2];
-
-                    // If last message resulted in hit/miss, print to enemy map
-                    if (previousAttackResult.equals("m")) {
-                        view.updateMaps(
-                                reformatTakenAttack(previousAttackCoordinate).getX(),
-                                reformatTakenAttack(previousAttackCoordinate).getY(),
-                                "m", !(user instanceof ServerUser));
-                    } else if (previousAttackResult.equals("h")) {
-                        view.updateMaps(
-                                reformatTakenAttack(previousAttackCoordinate).getX(),
-                                reformatTakenAttack(previousAttackCoordinate).getY(),
-                                "h", !(user instanceof ServerUser));
+            // Hantera miss eller träff, och kontrollera om hela skeppet är sänkt
+            if (wasHit) {
+                // Kontrollera om hela skeppet är sänkt
+                boolean isShipSunk = user.getMap().checkIfShipSunk(x, y);
+                if (isShipSunk) {
+                    // Uppdatera alla delar av det sänkta skeppet till "s"
+                    for (Coordinate coord : user.getMap().getSunkShipCoordinates(x, y)) {
+                        view.updateMaps(coord.getX(), coord.getY(), "s", user instanceof ServerUser);
                     }
+                    System.out.println("A ship has been sunk!");
+                } else {
+                    view.updateMaps(x, y, "h", user instanceof ServerUser); // "h" för träff
                 }
-                user.waitForOpponentTurn();
-
-                Attack nextAttack = user.performAttack();
-                String nextAttackMessage = createMessage(resultTakenAttack, reformatSentAttack(nextAttack));
-
-                if (user instanceof ServerUser) {
-                    ((ServerUser) user).sendMessageToClient(nextAttackMessage);
-                } else if (user instanceof ClientUser) {
-                    ((ClientUser) user).sendMessageToServer(nextAttackMessage);
-                }
-            } else if (message.contains("game over")) {
-                System.out.println("Game won!");
-                runGame = false;
+            } else {
+                view.updateMaps(x, y, "m", user instanceof ServerUser); // "m" för miss
             }
+
+            // Uppdatera fiendens karta med resultatet av föregående attack
+            if (user.getLastMessageSent() != null) {
+                previousAttackCoordinate = user.getLastMessageSent().split(" ")[2];
+                int prevX = reformatTakenAttack(previousAttackCoordinate).getX();
+                int prevY = reformatTakenAttack(previousAttackCoordinate).getY();
+
+                if (previousAttackResult.equals("m")) {
+                    view.updateMaps(prevX, prevY, "m", !(user instanceof ServerUser));
+                } else if (previousAttackResult.equals("h")) {
+                    view.updateMaps(prevX, prevY, "h", !(user instanceof ServerUser));
+                }
+            }
+
+            // Vänta på motståndarens tur
+            user.waitForOpponentTurn();
+
+            // Förbered nästa attack och skicka meddelande till motståndaren
+            Attack nextAttack = user.performAttack();
+            String nextAttackMessage = createMessage(wasHit ? "h" : "m", reformatSentAttack(nextAttack));
+
+            if (user instanceof ServerUser) {
+                ((ServerUser) user).sendMessageToClient(nextAttackMessage);
+            } else if (user instanceof ClientUser) {
+                ((ClientUser) user).sendMessageToServer(nextAttackMessage);
+            }
+
+        } else if (message.contains("game over")) {
+            System.out.println("Game won!");
+            runGame = false;
         }
+    }
+
 
 }

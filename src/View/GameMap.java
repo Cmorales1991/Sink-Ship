@@ -1,10 +1,13 @@
 package View;
 
+import Model.Coordinate;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import java.util.List;
 
 public class GameMap {
 
