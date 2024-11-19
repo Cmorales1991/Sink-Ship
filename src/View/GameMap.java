@@ -77,6 +77,9 @@ public class GameMap {
                 case "h":
                     cells[x][y].setFill(Color.RED); // hit
                     break;
+                case "s":
+                    cells[x][y].setFill(Color.YELLOW); // sink ship
+                    break;
                 case "m":
                     cells[x][y].setFill(Color.WHITE); // miss
                     break;

@@ -37,6 +37,14 @@ public abstract class User {
         }
     }
 
+    public void waitForOpponentTurn() {
+        try {
+            Thread.sleep(2000); // Väntar i 2 sekund innan nästa attack tillåts
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void takeAttack(int x, int y) {
         map.takeAttack(x,y);
     }
