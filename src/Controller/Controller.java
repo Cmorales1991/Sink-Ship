@@ -134,8 +134,14 @@ public class Controller {
             try {
                 String message = server.getLastMessageReceived();
                 if (message != null) {
+                    if(message.equals("game over"))
+                    {
+                        System.out.println("Client declared game over. Server wins!");
+                        runGame = false;
+                        break;
+                    }
                     handleIncomingMessage(server, message);
-                    Thread.sleep(1000);
+                    Thread.sleep(1500);
                 }
                 if (user.checkLost()) {
                     System.out.println("Server lost!");
@@ -154,8 +160,14 @@ public class Controller {
             try {
                 String message = client.getLastMessageReceived();
                 if (message != null) {
+                    if(message.equals("game over"))
+                    {
+                        System.out.println("Server declared game over. Client wins!");
+                        runGame = false;
+                        break;
+                    }
                     handleIncomingMessage(client, message);
-                    Thread.sleep(1000);
+                    Thread.sleep(1500);
                 }
                 if (user.checkLost()) {
                     System.out.println("Client lost!");
