@@ -80,6 +80,9 @@ public class GameMap {
                 case "m":
                     cells[x][y].setFill(Color.WHITE); // miss
                     break;
+                case "s":
+                    cells[x][y].setFill(Color.DARKRED); // sink ship
+                    break;
                 default:
                     cells[x][y].setFill(Color.LIGHTBLUE); // empty
                     break;
