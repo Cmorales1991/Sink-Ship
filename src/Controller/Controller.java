@@ -195,7 +195,6 @@ public class Controller {
 
             // Utför attacken på användarens karta och kontrollera resultatet
             user.takeAttack(x, y);
-
             // Hämtar aktuell koordinat för att kontrollera om det är ett skepp och om det har förstörts
             Coordinate targetCoordinate = user.getMap().getCoordinate(x, y);
             boolean wasHit = targetCoordinate.isShip() && targetCoordinate.isDestroyed();

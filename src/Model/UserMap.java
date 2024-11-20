@@ -97,10 +97,8 @@ public class UserMap {
         if (!startCoord.isShip()) {
             return false; // Om det inte är en skeppscell, kan skeppet inte vara sänkt
         }
-
         // Hämta alla koordinater som tillhör samma skepp
         List<Coordinate> shipCoordinates = getShipCoordinates(x, y);
-
         // Kontrollera om alla dessa koordinater är förstörda
         return shipCoordinates.stream().allMatch(Coordinate::isDestroyed);
     }
