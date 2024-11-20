@@ -2,6 +2,7 @@ package Controller;
 
 import Model.*;
 import View.ViewGame;
+import javafx.application.Platform;
 
 public class Controller {
 
@@ -176,7 +177,7 @@ public class Controller {
         System.out.println("Client game loop ended.");
     }
 
-    private void handleIncomingMessage(User user, String message) {
+    private void handleIncomingMessage(User user, String message) throws InterruptedException {
         if (message.contains("shot")) {
 
             String[] parts = message.split(" ");
@@ -198,50 +199,52 @@ public class Controller {
 
             switch (resultTakenAttack) {
                 case "h":
-                    view.updateMap(takenAttack.getX(), takenAttack.getY(), "h", user instanceof ServerUser);
+                        view.updateMap(takenAttack.getX(), takenAttack.getY(), "h", user instanceof ServerUser);
                     break;
                 case "m":
-                    view.updateMap(takenAttack.getX(), takenAttack.getY(), "m", user instanceof ServerUser);
+                        view.updateMap(takenAttack.getX(), takenAttack.getY(), "m", user instanceof ServerUser);
                     break;
                 case "s":
-                    view.updateMap(takenAttack.getX(), takenAttack.getY(), "s", user instanceof ServerUser);
+                        view.updateMap(takenAttack.getX(), takenAttack.getY(), "s", user instanceof ServerUser);
                     break;
             }
 
-                // Print previous attack on enemy map
-                if (user.getLastMessageSent() != null) {
-                    previousAttackCoordinate = user.getLastMessageSent().split(" ")[2];
+            // Print previous attack on enemy map
+            if (user.getLastMessageSent() != null) {
+                previousAttackCoordinate = user.getLastMessageSent().split(" ")[2];
+                int previousAttackX = (reformatTakenAttack(previousAttackCoordinate)).getX();
+                int previousAttackY = (reformatTakenAttack(previousAttackCoordinate)).getY();
 
-                    // If last message resulted in hit/miss/sunk, print to enemy map
-                    if (previousAttackResult.equals("m")) {
-                        view.updateMap(
-                                reformatTakenAttack(previousAttackCoordinate).getX(),
-                                reformatTakenAttack(previousAttackCoordinate).getY(),
-                                "m", !(user instanceof ServerUser));
-                    } else if (previousAttackResult.equals("h")) {
-                        view.updateMap(
-                                reformatTakenAttack(previousAttackCoordinate).getX(),
-                                reformatTakenAttack(previousAttackCoordinate).getY(),
-                                "h", !(user instanceof ServerUser));
-                    } else if (previousAttackResult.equals("s")) {
-                        view.updateMap(
-                                reformatTakenAttack(previousAttackCoordinate).getX(),
-                                reformatTakenAttack(previousAttackCoordinate).getY(),
-                                "s", !(user instanceof ServerUser));
-                    }
+                // Debug test
+                // System.out.println(previousAttackResult + " on coordinates: " + previousAttackX + previousAttackY);
+
+                // Print last attack's result to enemy map
+                switch (previousAttackResult) {
+                    case "m":
+                        view.updateMap(previousAttackX, previousAttackY, "m", !(user instanceof ServerUser));
+                        break;
+                    case "h":
+                        view.updateMap(previousAttackX, previousAttackY, "h", !(user instanceof ServerUser));
+                        break;
+                    case "s":
+                        view.updateMap(previousAttackX, previousAttackY, "s", !(user instanceof ServerUser));
+                        break;
                 }
-
-                Attack nextAttack = user.performAttack();
-                String nextAttackMessage = createMessage(resultTakenAttack, reformatSentAttack(nextAttack));
-
-                if (user instanceof ServerUser) {
-                    ((ServerUser) user).sendMessageToClient(nextAttackMessage);
-                } else if (user instanceof ClientUser) {
-                    ((ClientUser) user).sendMessageToServer(nextAttackMessage);
-                }
-            } else if (message.contains("game over")) {
-                System.out.println("Game won!");
-                runGame = false;
             }
+
+            Attack nextAttack = user.performAttack();
+            String nextAttackMessage = createMessage(resultTakenAttack, reformatSentAttack(nextAttack));
+
+            // Decide where to send next attack message
+            if (user instanceof ServerUser) {
+                ((ServerUser) user).sendMessageToClient(nextAttackMessage);
+            } else if (user instanceof ClientUser) {
+                ((ClientUser) user).sendMessageToServer(nextAttackMessage);
+            }
+
+        } else if (message.contains("game over")) {
+            System.out.println("Game won!");
+            runGame = false;
         }
+    }
 }
