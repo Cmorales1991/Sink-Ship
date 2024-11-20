@@ -2,31 +2,26 @@ package Controller;
 
 import Model.*;
 import View.ViewGame;
-import javafx.application.Platform;
-
-import java.util.Objects;
 
 public class Controller {
 
-    private User user;
-    private ViewGame view;
+    private final User user;
+    private final ViewGame view;
     private boolean runGame = true;
 
     public Controller(User user, ViewGame view) {
         this.user = user;
         this.view = view;
 
-        Platform.runLater(() -> {
-            // Place ships in view
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
-                    Coordinate coord = user.getMap().getCoordinate(x, y);
-                    if (coord != null && coord.isShip()) {
-                        view.placeShips(x, y, user instanceof ServerUser);
-                    }
+        // Place ships in view
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                Coordinate coord = user.getMap().getCoordinate(x, y);
+                if (coord != null && coord.isShip()) {
+                    view.placeShips(x, y, user instanceof ServerUser);
                 }
             }
-        });
+        }
     }
 
     private String reformatSentAttack(Attack attack) {
@@ -122,9 +117,9 @@ public class Controller {
         } else if (user instanceof ClientUser) {
             ClientUser client = (ClientUser) user;
             client.initialize("localhost", 6667);
+            // Perform first attack
             Attack initAttack = user.performAttack();
-            String initMessage = createMessage("i", reformatSentAttack(initAttack));
-            client.sendMessageToServer(initMessage);
+            client.sendMessageToServer(createMessage("i", reformatSentAttack(initAttack)));
             runClientGameLoop(client);
         }
     }
@@ -141,7 +136,7 @@ public class Controller {
                         break;
                     }
                     handleIncomingMessage(server, message);
-                    Thread.sleep(1500);
+                    Thread.sleep(1000);
                 }
                 if (user.checkLost()) {
                     System.out.println("Server lost!");
@@ -167,7 +162,7 @@ public class Controller {
                         break;
                     }
                     handleIncomingMessage(client, message);
-                    Thread.sleep(1500);
+                    Thread.sleep(1000);
                 }
                 if (user.checkLost()) {
                     System.out.println("Client lost!");
@@ -186,52 +181,55 @@ public class Controller {
 
             String[] parts = message.split(" ");
             String previousAttackResult = parts[0];
-            String previousAttackCoordinate; // Coord of previous attack
+            String previousAttackCoordinate; // Coordinate of previous attack
 
             Attack takenAttack = reformatTakenAttack(parts[2]);
             int x = takenAttack.getX();
             int y = takenAttack.getY();
             user.takeAttack(x, y);
 
-
             boolean wasHit = user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isDestroyed() &&
                     user.getMap().getCoordinate(takenAttack.getX(), takenAttack.getY()).isShip();
             String resultTakenAttack = wasHit ? "h" : "m";
 
-            boolean isShipSunk = wasHit && user.getMap().checkIfShipSunk(x, y);
+            if (wasHit && (user.getMap().checkIfShipSunk(x, y))) {
+                resultTakenAttack = "s";
+            }
 
-            if (isShipSunk) {
-                view.updateMaps(x, y, "s", user instanceof ServerUser);
-                System.out.println("A ship has been sunk!");
-            } else {
-                // Print taken attack visually
-                switch (resultTakenAttack) {
-                    case "h":
-                        view.updateMaps(takenAttack.getX(), takenAttack.getY(), "h", user instanceof ServerUser);
-                        break;
-                    case "m":
-                        view.updateMaps(takenAttack.getX(), takenAttack.getY(), "m", user instanceof ServerUser);
-                }
+            switch (resultTakenAttack) {
+                case "h":
+                    view.updateMap(takenAttack.getX(), takenAttack.getY(), "h", user instanceof ServerUser);
+                    break;
+                case "m":
+                    view.updateMap(takenAttack.getX(), takenAttack.getY(), "m", user instanceof ServerUser);
+                    break;
+                case "s":
+                    view.updateMap(takenAttack.getX(), takenAttack.getY(), "s", user instanceof ServerUser);
+                    break;
             }
 
                 // Print previous attack on enemy map
                 if (user.getLastMessageSent() != null) {
                     previousAttackCoordinate = user.getLastMessageSent().split(" ")[2];
 
-                    // If last message resulted in hit/miss, print to enemy map
+                    // If last message resulted in hit/miss/sunk, print to enemy map
                     if (previousAttackResult.equals("m")) {
-                        view.updateMaps(
+                        view.updateMap(
                                 reformatTakenAttack(previousAttackCoordinate).getX(),
                                 reformatTakenAttack(previousAttackCoordinate).getY(),
                                 "m", !(user instanceof ServerUser));
                     } else if (previousAttackResult.equals("h")) {
-                        view.updateMaps(
+                        view.updateMap(
                                 reformatTakenAttack(previousAttackCoordinate).getX(),
                                 reformatTakenAttack(previousAttackCoordinate).getY(),
                                 "h", !(user instanceof ServerUser));
+                    } else if (previousAttackResult.equals("s")) {
+                        view.updateMap(
+                                reformatTakenAttack(previousAttackCoordinate).getX(),
+                                reformatTakenAttack(previousAttackCoordinate).getY(),
+                                "s", !(user instanceof ServerUser));
                     }
                 }
-                user.waitForOpponentTurn();
 
                 Attack nextAttack = user.performAttack();
                 String nextAttackMessage = createMessage(resultTakenAttack, reformatSentAttack(nextAttack));
@@ -246,5 +244,4 @@ public class Controller {
                 runGame = false;
             }
         }
-
 }

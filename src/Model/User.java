@@ -6,8 +6,8 @@ import java.util.Random;
 
 public abstract class User {
 
-    private UserMap map;
-    private List<Attack> attacks = new ArrayList<>();
+    private final UserMap map;
+    private final List<Attack> attacks = new ArrayList<>();
     protected String lastMessageReceived;
     protected String lastMessageSent;
 
@@ -15,33 +15,25 @@ public abstract class User {
         this.map = map;
     }
 
-    // ATTACK WILL BE SENT TO ENEMY PLAYER (SERVER OR CLIENT) THROUGH GAME CLASS
+    // An attack will be sent to enemy player through Controller
     public Attack performAttack() {
 
         Attack performedAttack;
         Random rand = new Random();
 
-        while (true) {
+        while (true) { // Loops until new Attack is generated, no duplicates allowed
 
             int x = rand.nextInt(10);
             int y = rand.nextInt(10);
 
-            boolean exists = attacks.stream()
+            boolean exists = attacks.stream() // Check if coordinate has been attacked before
                     .anyMatch(attack -> attack.getX() == x && attack.getY() == y);
 
-            if (!exists) {
+            if (!exists) { // If the new Attack is unregistered
                 performedAttack = new Attack(x, y);
                 attacks.add(performedAttack);
                 return performedAttack;
             }
-        }
-    }
-
-    public void waitForOpponentTurn() {
-        try {
-            Thread.sleep(2000); // Väntar i 2 sekund innan nästa attack tillåts
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 

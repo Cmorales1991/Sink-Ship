@@ -1,8 +1,8 @@
 package Model;
 
 public class Attack {
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     public Attack(int x, int y) {
         this.x = x;

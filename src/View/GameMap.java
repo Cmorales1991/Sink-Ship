@@ -1,6 +1,5 @@
 package View;
 
-import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -10,18 +9,16 @@ public class GameMap {
 
     public static final int GRID_SIZE = 10;
     public static final int CELL_SIZE = 30;
-    private AnchorPane pane;
-    private boolean isPlayer;
-    public boolean isHorizontal = true; // Standardplacering allstå horisonellt
-    private Rectangle[][] cells;
+    private final AnchorPane pane;
+    private final Rectangle[][] cells;
 
-    public GameMap(boolean isPlayer) {
-        this.isPlayer = isPlayer;
+    public GameMap() {
         cells = new Rectangle[GRID_SIZE][GRID_SIZE];
         drawGrid();
-        pane = new AnchorPane(); // en AnchorPane för mapen
+        pane = new AnchorPane(); // AnchorPane as map
         addCoordinateLabels(pane);
 
+        // Create cells
         for (int x = 0; x < GRID_SIZE; x++) {
             for (int y = 0; y < GRID_SIZE; y++) {
                 pane.getChildren().add(cells[x][y]);
@@ -37,14 +34,13 @@ public class GameMap {
                 cell.setStroke(Color.BLACK);
                 cell.setLayoutX(x * CELL_SIZE);
                 cell.setLayoutY(y * CELL_SIZE);
-
                 cells[x][y] = cell; // Save cell
             }
         }
     }
 
     private void addCoordinateLabels(AnchorPane pane) {
-        // bokstavsmarkeringar för y-axeln (A-J)
+        // Mark Y-axis with letters
         for (int i = 0; i < GRID_SIZE; i++) {
             Label rowLabelLeft = new Label(String.valueOf((char) ('A' + i)));
             rowLabelLeft.setLayoutX(-20); // Placering till vänster om spelbrädet
@@ -55,7 +51,7 @@ public class GameMap {
             rowLabelRight.setLayoutY(i * CELL_SIZE + CELL_SIZE / 4);
             pane.getChildren().addAll(rowLabelLeft, rowLabelRight);
         }
-        // siffermarkeringar för x-axeln (0-9)
+        // Mark X-axis with numbers
         for (int i = 0; i < GRID_SIZE; i++) {
             Label colLabelTop = new Label(String.valueOf(i));
             colLabelTop.setLayoutX(i * CELL_SIZE + CELL_SIZE / 3);
@@ -69,25 +65,23 @@ public class GameMap {
     }
 
     public void updateMap(int x, int y, String status) {
-        Platform.runLater(() -> {
             switch (status.toLowerCase()) {
                 case "p":
-                    cells[x][y].setFill(Color.GREEN); // place ship
+                    cells[x][y].setFill(Color.GREEN); // Ship placed
                     break;
                 case "h":
-                    cells[x][y].setFill(Color.RED); // hit
+                    cells[x][y].setFill(Color.RED); // Ship hit
                     break;
                 case "s":
-                    cells[x][y].setFill(Color.YELLOW); // sink ship
+                    cells[x][y].setFill(Color.BLACK); // Ship sunk
                     break;
                 case "m":
-                    cells[x][y].setFill(Color.WHITE); // miss
+                    cells[x][y].setFill(Color.WHITE); // Miss
                     break;
                 default:
-                    cells[x][y].setFill(Color.LIGHTBLUE); // empty
+                    cells[x][y].setFill(Color.LIGHTBLUE); // Empty/default
                     break;
             }
-        });
     }
 
     public AnchorPane getGameMapPane() {
