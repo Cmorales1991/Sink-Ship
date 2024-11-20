@@ -2,7 +2,6 @@ package Controller;
 
 import Model.*;
 import View.ViewGame;
-import javafx.application.Platform;
 
 public class Controller {
 
