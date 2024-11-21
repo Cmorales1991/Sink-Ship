@@ -72,14 +72,14 @@ public class ServerUser extends User {
                     throw new RuntimeException(e);
                 }
                 try {
-                    Thread.sleep(1500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
             while (!(messageFromClient.equals("game over")));
 
-            //Om vi kommer hit så kommer server stängas av och då stänger vi av klienten först.
+            // If server is to close, end client first
             try {
                 if (socket != null) {
                     socket.close();

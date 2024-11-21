@@ -65,7 +65,7 @@ public class ClientUser extends User {
                 throw new RuntimeException(e);
             }
             try {
-                Thread.sleep(1500);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

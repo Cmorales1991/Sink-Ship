@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class UserMap {
 
-    private List<Coordinate> map = new ArrayList<>();
+    private final List<Coordinate> map = new ArrayList<>();
     private final int MAP_SIZE = 10;
     private final int[] SHIPS = {5, 4, 4, 3, 3, 3, 2, 2, 2, 2};
 
@@ -22,10 +22,10 @@ public class UserMap {
 
     private void placeShips() {
         Random rand = new Random();
-        // LOOP THROUGH ALL SHIPS
+
         for (int size : SHIPS) {
             boolean placed = false;
-            // LOOPS UNTIL ALL SHIPS ARE PLACED
+            // Loops through ships until all are placed
             while (!placed) {
                 boolean horizontal = rand.nextBoolean();
                 int startX = rand.nextInt(MAP_SIZE);
@@ -40,13 +40,14 @@ public class UserMap {
     }
 
     private boolean canPlaceShip(int startX, int startY, int size, boolean horizontal) {
+        // Check largest end coordinate
         int endX = horizontal ? startX + size - 1 : startX;
         int endY = horizontal ? startY : startY + size - 1;
 
-        // MAKE SURE SHIP FITS ON MAP
+        // Check if ship fits on map
         if (endX >= MAP_SIZE || endY >= MAP_SIZE) return false;
 
-        // CHECK SHIP'S SURROUNDING COORDINATES
+        // Check surrounding coordinates for ships
         for (int x = Math.max(0, startX - 1); x <= Math.min(MAP_SIZE - 1, endX + 1); x++) {
             for (int y = Math.max(0, startY - 1); y <= Math.min(MAP_SIZE - 1, endY + 1); y++) {
                 Coordinate coord = getCoordinate(x, y);
@@ -55,13 +56,13 @@ public class UserMap {
                 }
             }
         }
-        return true; // IF PLACEMENT IS ALLOWED
+        return true; // If ship placement is allowed
     }
 
     private void placeShip(int startX, int startY, int size, boolean horizontal) {
         for (int i = 0; i < size; i++) {
-            int x = horizontal ? startX + i : startX;
-            int y = horizontal ? startY : startY + i;
+            int x = horizontal ? startX + i : startX; // If horizontal, extend X-axis
+            int y = horizontal ? startY : startY + i; // If vertical, extend Y-axis
             getCoordinate(x, y).setShip(true);
         }
     }
@@ -85,7 +86,7 @@ public class UserMap {
 
         for (Coordinate coord : map) {
             if (coord.isShip() && !coord.isDestroyed()) {
-                noShips = false; // If any ships are left and not destroyed, return false (still not lost)
+                noShips = false; // If any ships are not destroyed, return false
                 break;
             }
         }
@@ -93,17 +94,43 @@ public class UserMap {
     }
 
     public boolean checkIfShipSunk(int x, int y) {
-        for (Coordinate coord : map) {
-            if (coord.isShip() && (coord.getX() == x && coord.getY() == y)) {
-                return map.stream()
-                        .filter(Coordinate::isShip)
-                        .noneMatch(c -> c.getX() == x && c.getY() == y);
+        Coordinate attackedCoordinate = getCoordinate(x, y);
+
+        // First check that the coordinate is a ship
+        if (attackedCoordinate == null || !attackedCoordinate.isShip()) {
+            return false;
+        }
+
+        // Check if surrounding X-coordinates are parts of ship (if so, ship is horizontal)
+        boolean leftCoordinate = (getCoordinate(x + 1, y) != null) && (getCoordinate(x + 1, y).isShip());
+        boolean rightCoordinate = (getCoordinate(x - 1, y) != null) && (getCoordinate(x - 1, y).isShip());
+        boolean horizontal = (leftCoordinate || rightCoordinate);
+
+        List<Coordinate> shipParts = new ArrayList<>();
+
+        // Collect all ship parts to shipParts
+        if (horizontal) {
+            for (int i = x; i >= 0 && getCoordinate(i, y) != null && getCoordinate(i, y).isShip(); i--) {
+                shipParts.add(getCoordinate(i, y));
+            }
+            for (int i = x; i <= MAP_SIZE && getCoordinate(i, y) != null && getCoordinate(i, y).isShip(); i++) {
+                shipParts.add(getCoordinate(i, y));
             }
         }
-        return false;
+        else {
+            for (int i = y; i >= 0 && getCoordinate(x, i) != null && getCoordinate(x, i).isShip(); i--) {
+                shipParts.add(getCoordinate(x, i));
+            }
+            for (int i = y; i <= MAP_SIZE && getCoordinate(x, i) != null && getCoordinate(x, i).isShip(); i++) {
+                shipParts.add(getCoordinate(x, i));
+            }
+        }
+
+        // If isDestroyed true for all coordinates in shipParts, return true (ship is sunk)
+        return shipParts.stream().allMatch(Coordinate::isDestroyed);
     }
 
-    // METHOD FOR TESTING
+    // Method for testing
     public void printMap() {
         System.out.println("UserMap:");
         for(Coordinate c : map) {

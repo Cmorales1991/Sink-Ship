@@ -1,6 +1,5 @@
 package View;
 
-import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -19,11 +18,11 @@ public class ViewGame extends View
     @Override
     protected void init(boolean isServer)
     {
-        // spelbräda för server o klient
-        serverMap = new GameMap(true);
-        clientMap = new GameMap(false);
+        // Maps for server and client
+        serverMap = new GameMap();
+        clientMap = new GameMap();
 
-        // positionering spelplan för serverplan och client
+        // Position maps
         serverPane = serverMap.getGameMapPane();
         serverPane.setLayoutX(50);
         serverPane.setLayoutY(50);
@@ -32,7 +31,7 @@ public class ViewGame extends View
         clientPane.setLayoutX(GameMap.GRID_SIZE * GameMap.CELL_SIZE + 150);
         clientPane.setLayoutY(50);
 
-        // underrubrik för spelplanerna
+        // Map titles
         serverLabel = new Label("SERVER'S SHIPS");
         serverLabel.setLayoutX(150);
         serverLabel.setLayoutY(10);
@@ -43,37 +42,30 @@ public class ViewGame extends View
         clientLabel.setLayoutY(10);
         clientLabel.setTextFill(Color.GREEN);
 
+        // Add all nodes
         pane.getChildren().addAll(serverPane, clientPane, serverLabel, clientLabel);
-
     }
 
+    // Initial ship placement called from Controller, always green cells
     public void placeShips(int x, int y, boolean ifServerInstance) {
-        Platform.runLater(() -> {
-            if (ifServerInstance) {
-                serverMap.updateMap(x, y, "p");
-            } else {
-                clientMap.updateMap(x, y, "p");
-            }
-        });
+        if (ifServerInstance) {
+            serverMap.updateMap(x, y, "p");
+        } else {
+            clientMap.updateMap(x, y, "p");
+        }
     }
 
-    public void updateMaps(int x, int y, String status, boolean ifServerMap) {
-        Platform.runLater(() -> {
-            if (ifServerMap) {
-                serverMap.updateMap(x, y, status);
-            } else {
-                clientMap.updateMap(x, y, status);
-            }
-        });
+    public void updateMap(int x, int y, String status, boolean ifServerMap) {
+        if (ifServerMap) {
+            serverMap.updateMap(x, y, status);
+        } else {
+            clientMap.updateMap(x, y, status);
+        }
     }
 
     @Override
     public View update()
     {
         return this;
-    }
-
-    public AnchorPane getPane() {
-        return pane;
     }
 }

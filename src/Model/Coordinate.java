@@ -2,8 +2,8 @@ package Model;
 
 public class Coordinate {
 
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
     private boolean ship;
     private boolean destroyed;
 
